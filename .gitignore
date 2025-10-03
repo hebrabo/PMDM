@@ -1,15 +1,16 @@
+# Gradle
+.gradle/
+build/
+Practica1/app/build/
+
+# Android Studio
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
 local.properties
+
+# Logs y otros
+*.log
+.DS_Store
+Thumbs.db
+*.apk
+*.ap_
