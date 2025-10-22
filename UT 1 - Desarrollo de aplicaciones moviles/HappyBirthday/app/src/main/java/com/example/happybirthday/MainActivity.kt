@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.happybirthday.ui.theme.HappyBirthdayTheme
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 
 
 class MainActivity : ComponentActivity() {
@@ -32,10 +33,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ){
-                    GreetingText(
+                    GreetingImage(
                         message = "Happy Birthday Aixa!" ,
-                        from = "From Helena",
-                        modifier = Modifier.padding(8.dp)
+                        from = "From Helena"
                     )
                 }
             }
@@ -46,10 +46,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingImage(message: String, from: String, modifier: Modifier = Modifier){
 val image = painterResource(R.drawable.androidparty)
-    Image(
-        painter = image,
-        contentDescription = null
-    )
+    Box(modifier) {
+        Image(
+            painter = image,
+            contentDescription = null
+        )
+        GreetingText(
+            message = message,
+            from = from,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        )
+    }
 }
 @Composable
 fun GreetingText(message: String, from: String, modifier : Modifier = Modifier){
