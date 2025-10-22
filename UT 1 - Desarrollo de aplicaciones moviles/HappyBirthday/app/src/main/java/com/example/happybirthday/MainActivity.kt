@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 
 
 class MainActivity : ComponentActivity() {
@@ -35,8 +36,8 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ){
                     GreetingImage(
-                        message = "Happy Birthday Aixa!" ,
-                        from = "From Helena"
+                        message = stringResource(R.string.happy_birthday_aixa),
+                        from = stringResource(R.string.from_helena)
                     )
                 }
             }
@@ -86,14 +87,13 @@ fun GreetingText(message: String, from: String, modifier : Modifier = Modifier){
     }
 
 
-@Preview(
-    showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun BirthdayCardPreview() {
     HappyBirthdayTheme {
         GreetingImage(
-            message = "Happy Birthday Aixa!" ,
-            from = "From Helena"
+            message = stringResource(R.string.happy_birthday_aixa),
+            from = stringResource(R.string.from_helena)
         )
     }
 }
