@@ -1,0 +1,16 @@
+# Gradle
+.gradle/
+build/
+Practica1/app/build/
+
+# Android Studio
+.idea/
+*.iml
+local.properties
+
+# Logs y otros
+*.log
+.DS_Store
+Thumbs.db
+*.apk
+*.ap_
