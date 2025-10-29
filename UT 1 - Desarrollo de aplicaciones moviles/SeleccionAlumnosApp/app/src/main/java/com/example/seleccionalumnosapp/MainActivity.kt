@@ -3,6 +3,7 @@ package com.example.seleccionalumnosapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,39 +11,31 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.seleccionalumnosapp.ui.theme.SeleccionAlumnosAppTheme
+import androidx.compose.runtime.LaunchedEffect
 import kotlin.random.Random
 
-// Clase Alumno (similar a Tareas)
+// Clase Alumno
 class Alumno(val id: Int, val nombre: String, var seleccionado: Boolean = false) {
     fun marcarComoSeleccionado() {
         seleccionado = true
     }
-
-    fun mostrarInfo(): String {
-        val estado = if (seleccionado) "[✔]" else "[ ]"
-        return "$estado $id - $nombre"
-    }
 }
 
-// Clase ListaAlumnos (similar a ListaTareas)
+// Clase ListaAlumnos
 class ListaAlumnos {
     private val alumnos: MutableList<Alumno> = mutableListOf()
 
     fun agregarAlumno(alumno: Alumno) {
         alumnos.add(alumno)
-        println("Alumno agregado: ${alumno.nombre}")
     }
 
-    fun mostrarAlumnos(): List<String> {
-        return alumnos.map { it.mostrarInfo() }
-    }
-
-    fun seleccionarAlumno(): Alumno? {
+    fun seleccionarAlumno(): Alumno {
         val restantes = alumnos.filter { !it.seleccionado }
         if (restantes.isEmpty()) {
-            // Todos han sido seleccionados → reiniciar
             alumnos.forEach { it.seleccionado = false }
         }
         val nuevo = alumnos.filter { !it.seleccionado }.random()
@@ -60,10 +53,9 @@ class ListaAlumnos {
 // Composable principal
 @Composable
 fun SeleccionAlumnosApp() {
-    // Crear la lista de alumnos
     val listaAlumnos = remember { ListaAlumnos() }
 
-    // Inicializar alumnos si la lista está vacía
+    // Inicializar alumnos
     if (listaAlumnos.obtenerAlumnos().isEmpty()) {
         val nombres = listOf(
             "Ana Martínez", "Luis González", "Carlos Pereira",
@@ -75,13 +67,11 @@ fun SeleccionAlumnosApp() {
         }
     }
 
-    // Estado para forzar recomposición al seleccionar o reiniciar
-    var dummy by remember { mutableStateOf(0) }
+    // Índice seleccionado
+    var indiceActual by remember { mutableStateOf<Int?>(null) }
 
-    // Estado para el scroll
     val scrollState = rememberScrollState()
 
-    // Composición de la UI
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -89,42 +79,64 @@ fun SeleccionAlumnosApp() {
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Lista de alumnos
-        listaAlumnos.mostrarAlumnos().forEach { info ->
-            Text(
-                text = info,
+        // Lista de alumnos con color de fondo
+        listaAlumnos.obtenerAlumnos().forEachIndexed { index, alumno ->
+            val colorFondo = when {
+                indiceActual == index -> Color(0xFF00C853)
+                alumno.seleccionado -> Color(0xFFD50000)
+                else -> Color(0xFF333333)
+            }
+
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-            )
+                    .padding(vertical = 4.dp)
+                    .background(colorFondo)
+                    .padding(12.dp)
+            ) {
+                Text(
+                    text = alumno.nombre,
+                    color = Color.White
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Alumno seleccionado
-        Text(
-            text = "Alumno seleccionado: ${listaAlumnos.obtenerAlumnos().find { it.seleccionado }?.nombre ?: "-"}",
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
+        // Alumno seleccionado en dos líneas
+        val alumnoSeleccionado = indiceActual?.let { listaAlumnos.obtenerAlumnos()[it] }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Alumno seleccionado:", color = Color.White)
+            Text(
+                text = alumnoSeleccionado?.nombre ?: "-",
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Botones
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = {
-                listaAlumnos.seleccionarAlumno()
-                dummy++ // fuerza recomposición
+                val nuevo = listaAlumnos.seleccionarAlumno()
+                indiceActual = listaAlumnos.obtenerAlumnos().indexOf(nuevo)
             }) {
                 Text("Seleccionar alumno")
             }
 
             Button(onClick = {
                 listaAlumnos.reset()
-                dummy++
+                indiceActual = null
             }) {
                 Text("Reiniciar")
             }
         }
+    }
+
+    // Autoscroll al alumno seleccionado
+    LaunchedEffect(indiceActual) {
+        indiceActual?.let { scrollState.animateScrollTo(it * 60) }
     }
 }
 
