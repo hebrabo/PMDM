@@ -67,69 +67,68 @@ fun SeleccionAlumnosApp() {
         }
     }
 
-    // Índice seleccionado
     var indiceActual by remember { mutableStateOf<Int?>(null) }
-
     val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(scrollState),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Lista de alumnos con color de fondo
-        listaAlumnos.obtenerAlumnos().forEachIndexed { index, alumno ->
-            val colorFondo = when {
-                indiceActual == index -> Color(0xFF00C853)
-                alumno.seleccionado -> Color(0xFFD50000)
-                else -> Color(0xFF333333)
-            }
+        // Parte fija: texto + botones
+        val alumnoSeleccionado = indiceActual?.let { listaAlumnos.obtenerAlumnos()[it] }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Alumno seleccionado:", color = Color.Black)
+            Text(
+                text = alumnoSeleccionado?.nombre ?: "-",
+                color = Color.Black,
+                fontWeight = FontWeight.Bold
+            )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp)
-                    .background(colorFondo)
-                    .padding(12.dp)
-            ) {
-                Text(
-                    text = alumno.nombre,
-                    color = Color.White
-                )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Button(onClick = {
+                    val nuevo = listaAlumnos.seleccionarAlumno()
+                    indiceActual = listaAlumnos.obtenerAlumnos().indexOf(nuevo)
+                }) {
+                    Text("Seleccionar alumno")
+                }
+
+                Button(onClick = {
+                    listaAlumnos.reset()
+                    indiceActual = null
+                }) {
+                    Text("Reiniciar")
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Alumno seleccionado en dos líneas
-        val alumnoSeleccionado = indiceActual?.let { listaAlumnos.obtenerAlumnos()[it] }
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = "Alumno seleccionado:", color = Color.White)
-            Text(
-                text = alumnoSeleccionado?.nombre ?: "-",
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-        }
+        // Parte scrollable: lista de alumnos
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scrollState)
+        ) {
+            listaAlumnos.obtenerAlumnos().forEachIndexed { index, alumno ->
+                val colorFondo = when {
+                    indiceActual == index -> Color(0xFF00C853) // verde actual
+                    alumno.seleccionado -> Color(0xFFD50000) // rojo ya seleccionado
+                    else -> Color(0xFF333333) // gris no seleccionado
+                }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Botones
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = {
-                val nuevo = listaAlumnos.seleccionarAlumno()
-                indiceActual = listaAlumnos.obtenerAlumnos().indexOf(nuevo)
-            }) {
-                Text("Seleccionar alumno")
-            }
-
-            Button(onClick = {
-                listaAlumnos.reset()
-                indiceActual = null
-            }) {
-                Text("Reiniciar")
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                        .background(colorFondo)
+                        .padding(12.dp)
+                ) {
+                    Text(text = alumno.nombre, color = Color.White)
+                }
             }
         }
     }
@@ -156,6 +155,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 
 
