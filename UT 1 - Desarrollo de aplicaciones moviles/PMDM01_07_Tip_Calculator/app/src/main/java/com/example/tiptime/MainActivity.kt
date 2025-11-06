@@ -64,7 +64,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+/**
+* Función componible principal que organiza la interfaz de usuario.
+*
+* - Administra el estado 'amountInput', que representa el texto que el usuario ingresa.
+* - Convierte la entrada a número usando `toDoubleOrNull()` y calcula el importe de la propina con `calculateTip()`.
+* - Muestra el campo de texto (EditNumberField) y el resultado de la propina calculada.
+*
+* La función sigue el patrón de *elevación de estado*, manteniendo el estado en el nivel superior
+* (TipTimeLayout) y pasando los valores necesarios a los elementos componibles hijos.
+*/
 fun TipTimeLayout() {
+    // Estado recordado que almacena el texto ingresado por el usuario.
+    var amountInput by remember { mutableStateOf("") }
+    // Convierte el texto a Double o usa 0.0 si no es un número válido.
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    // Calcula el importe de la propina usando la función auxiliar.
+    val tip = calculateTip(amount)
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -73,18 +89,25 @@ fun TipTimeLayout() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Título superior de la pantalla
         Text(
             text = stringResource(R.string.calculate_tip),
             modifier = Modifier
                 .padding(bottom = 16.dp, top = 40.dp)
                 .align(alignment = Alignment.Start)
         )
-        // Muestra el cuadro de texto en la pantalla
+        // Campo de texto que recibe el importe de la cuenta.
+        // Se pasa el valor actual y la función de actualización (estado elevado).
         EditNumberField(
-            modifier = Modifier.padding(bottom = 32.dp).fillMaxWidth()
+            value = amountInput,
+            onValueChange = { amountInput = it },
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
         )
+        // Muestra el importe calculado de la propina en formato monetario.
         Text(
-            text = stringResource(R.string.tip_amount, "$0.00"),
+            text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
         )
         Spacer(modifier = Modifier.height(150.dp))
@@ -92,38 +115,29 @@ fun TipTimeLayout() {
 }
 
 @Composable
-/* Función componible que le permite al usuario ingresar texto en la app.
- * - El parámetro value es un cuadro de texto que muestra el valor de cadena que pasas aquí.
- * - El parámetro 'onValueChange' es una lambda que se ejecuta cada vez que el usuario modifica el texto.
- *   Su propósito es actualizar el valor almacenado y reflejar los cambios en la interfaz.
- * Esta función utiliza la API de estado de Jetpack Compose para recordar y conservar el valor del texto
- * incluso después de las recomposiciones, gracias al uso de 'remember' y 'mutableStateOf'.
- * Además, convierte el texto ingresado a un número y calcula el importe de la propina
- * mediante la función calculateTip(), mostrando el valor en formato monetario.
- */
-fun EditNumberField(modifier: Modifier = Modifier) {
-    // Se declara una variable de estado 'amountInput' utilizando el delegado 'by' de Kotlin.
-    // 'remember' asegura que el valor de 'amountInput' se conserve entre recomposiciones,
-    // evitando que se reinicie a su valor inicial cada vez que la UI se vuelva a dibujar.
-    // 'mutableStateOf("")' crea un estado observable con una cadena vacía como valor inicial.
-    var amountInput by remember { mutableStateOf("") }
-    // Convierte el texto ingresado (String) a un valor Double.
-    // Si la conversión falla (por ejemplo, el campo está vacío o contiene texto no numérico),
-    // se asigna el valor 0.0 gracias al uso del operador Elvis (?:).
-    val amount = amountInput.toDoubleOrNull() ?: 0.0
-    // Calcula el importe de la propina en base al monto ingresado utilizando la función calculateTip().
-    // Esta función devuelve una cadena formateada como valor monetario (por ejemplo, "$3.45").
-    val tip = calculateTip(amount)
-    // Componente de entrada de texto que muestra y actualiza el valor de 'amountInput'.
+/*
+* Función componible sin estado que muestra un campo de texto para ingresar el importe.
+*
+* - Recibe dos parámetros principales:
+*   - 'value': el valor actual que se muestra en el campo de texto.
+*   - 'onValueChange': una lambda que se ejecuta cuando el usuario cambia el texto.
+*
+* Esta función no almacena estado propio; el valor y las actualizaciones se manejan desde
+* la función que la llama (TipTimeLayout), siguiendo el principio de *elevación de estado*.
+*/
+fun EditNumberField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // Campo de texto para ingreso numérico.
     TextField(
-        // Muestra el texto actual almacenado en la variable de estado 'amountInput'.
-        value = amountInput,
-        // Se ejecuta cada vez que el usuario modifica el texto en el campo.
-        // Actualiza el valor de 'amountInput', lo que provoca una recomposición
-        // y actualiza automáticamente la interfaz con el nuevo valor.
-        onValueChange = { amountInput = it },
-        // 'label' muestra un texto descriptivo dentro del campo (por ejemplo, "Bill amount").
-        // Este texto actúa como guía para el usuario y se mueve hacia arriba cuando el campo gana foco.
+        // Muestra el valor actual recibido como parámetro.
+        value = value,
+        // Llama a la función proporcionada cuando el usuario modifica el texto.
+        onValueChange = onValueChange,
+        /// 'label' muestra una descripción del campo (por ejemplo, "Bill amount").
+        // El texto se desplaza hacia arriba cuando el campo obtiene foco.
         label = { Text(stringResource(R.string.bill_amount)) },
         // Limita el campo a una sola línea de texto (evita que el usuario agregue saltos de línea).
         singleLine = true,
@@ -133,10 +147,6 @@ fun EditNumberField(modifier: Modifier = Modifier) {
         modifier = modifier
     )
 
-    // (Nota) Actualmente el importe calculado de la propina ('tip') no se muestra en pantalla
-    // dentro de esta función. En la siguiente sección se elevará el estado para que pueda
-    // ser usado desde TipTimeLayout() y así mostrar el importe de la propina en la UI.
-    
 }
 
 /**
