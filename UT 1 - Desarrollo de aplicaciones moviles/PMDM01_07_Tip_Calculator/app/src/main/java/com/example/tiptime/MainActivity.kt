@@ -57,6 +57,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Icon
 import androidx.compose.ui.res.painterResource
+import org.jetbrains.annotations.VisibleForTesting
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -245,7 +246,9 @@ fun RoundTheTipRow(
  *
  * @return una cadena formateada en la moneda local, por ejemplo "$10.00".
  */
-private fun calculateTip(
+
+@VisibleForTesting
+internal fun calculateTip(
     amount: Double,
     tipPercent: Double = 15.0,
     roundUp: Boolean
