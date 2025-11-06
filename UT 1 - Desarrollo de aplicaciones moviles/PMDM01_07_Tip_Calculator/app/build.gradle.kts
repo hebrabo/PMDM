@@ -82,4 +82,5 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
 
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    testImplementation(kotlin("test"))
 }
