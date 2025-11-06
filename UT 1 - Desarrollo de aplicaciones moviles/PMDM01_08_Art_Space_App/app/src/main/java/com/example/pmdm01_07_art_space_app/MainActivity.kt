@@ -6,11 +6,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -24,12 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pmdm01_07_art_space_app.ui.theme.PMDM01_07_Art_Space_AppTheme
+import androidx.compose.ui.graphics.Color
 
 
 class MainActivity : ComponentActivity() {
@@ -75,17 +82,43 @@ fun ArtSpaceApp(modifier: Modifier = Modifier) {
             painter = painterResource(id = artworks[currentArtwork].imageRes),
             contentDescription = artworks[currentArtwork].title,
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+                .fillMaxWidth(),
             contentScale = ContentScale.Fit
         )
-        Text(text = artworks[currentArtwork].title, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Text(text = artworks[currentArtwork].artist, fontSize = 18.sp, fontStyle = FontStyle.Italic)
-        Text(text = artworks[currentArtwork].year, fontSize = 16.sp)
+
+        Spacer(modifier = Modifier.padding(vertical = 16.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color(0xFFBBDEFB)) // fondo gris
+                .padding(8.dp), // padding interno para separar el texto del fondo
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = artworks[currentArtwork].title,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Text(
+                text = artworks[currentArtwork].artist,
+                fontSize = 18.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color.DarkGray
+            )
+            Text(
+                text = artworks[currentArtwork].year,
+                fontSize = 16.sp,
+                color = Color.DarkGray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
 
         Row (
             modifier = Modifier
-                .padding(all = 16.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ){
