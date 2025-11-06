@@ -51,6 +51,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
 
 class MainActivity : ComponentActivity() {
@@ -93,18 +95,21 @@ fun TipTimeLayout() {
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
 
+    // Variable de estado que guarda si el usuario desea redondear la propina.
+    // Se recuerda durante las recomposiciones y su valor inicial es `false` (sin redondear).
     var roundUp by remember { mutableStateOf(false) }
 
     // Calcula la propina en función del importe, el porcentaje y el estado del interruptor.
     val tip = calculateTip(amount, tipPercent, roundUp)
 
-
-
     Column(
         modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .safeDrawingPadding(),
+            .padding(40.dp)
+            // Habilita el desplazamiento vertical en la columna.
+            // `verticalScroll(rememberScrollState())` recuerda la posición de scroll y permite
+            // desplazarse por la interfaz cuando el dispositivo está en orientación horizontal
+            // o cuando el contenido no cabe completamente en pantalla.
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
