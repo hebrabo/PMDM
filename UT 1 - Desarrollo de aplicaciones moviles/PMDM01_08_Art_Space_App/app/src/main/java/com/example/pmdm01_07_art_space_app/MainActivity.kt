@@ -123,15 +123,15 @@ fun ArtSpaceApp(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Button(onClick = {
-                if (currentArtwork > 0) currentArtwork--
-            }
-            ) {
+                // Si estamos en la primera obra, ir a la última
+                currentArtwork = if (currentArtwork > 0) currentArtwork - 1 else artworks.size - 1
+            }) {
                 Text("Anterior")
             }
             Button(onClick = {
-                if (currentArtwork < artworks.size -1) currentArtwork++
-            }
-            ) {
+                // Si estamos en la última obra, ir a la primera
+                currentArtwork = if (currentArtwork < artworks.size - 1) currentArtwork + 1 else 0
+            }) {
                 Text("Siguiente")
             }
         }
