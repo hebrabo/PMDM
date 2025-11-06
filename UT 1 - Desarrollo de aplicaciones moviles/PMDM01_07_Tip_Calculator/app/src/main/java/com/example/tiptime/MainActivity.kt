@@ -98,13 +98,22 @@ fun TipTimeLayout() {
  *   Su propósito es actualizar el valor almacenado y reflejar los cambios en la interfaz.
  * Esta función utiliza la API de estado de Jetpack Compose para recordar y conservar el valor del texto
  * incluso después de las recomposiciones, gracias al uso de 'remember' y 'mutableStateOf'.
- * */
+ * Además, convierte el texto ingresado a un número y calcula el importe de la propina
+ * mediante la función calculateTip(), mostrando el valor en formato monetario.
+ */
 fun EditNumberField(modifier: Modifier = Modifier) {
     // Se declara una variable de estado 'amountInput' utilizando el delegado 'by' de Kotlin.
     // 'remember' asegura que el valor de 'amountInput' se conserve entre recomposiciones,
     // evitando que se reinicie a su valor inicial cada vez que la UI se vuelva a dibujar.
     // 'mutableStateOf("")' crea un estado observable con una cadena vacía como valor inicial.
     var amountInput by remember { mutableStateOf("") }
+    // Convierte el texto ingresado (String) a un valor Double.
+    // Si la conversión falla (por ejemplo, el campo está vacío o contiene texto no numérico),
+    // se asigna el valor 0.0 gracias al uso del operador Elvis (?:).
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    // Calcula el importe de la propina en base al monto ingresado utilizando la función calculateTip().
+    // Esta función devuelve una cadena formateada como valor monetario (por ejemplo, "$3.45").
+    val tip = calculateTip(amount)
     // Componente de entrada de texto que muestra y actualiza el valor de 'amountInput'.
     TextField(
         // Muestra el texto actual almacenado en la variable de estado 'amountInput'.
@@ -118,9 +127,16 @@ fun EditNumberField(modifier: Modifier = Modifier) {
         label = { Text(stringResource(R.string.bill_amount)) },
         // Limita el campo a una sola línea de texto (evita que el usuario agregue saltos de línea).
         singleLine = true,
+        // 'keyboardOptions' define el tipo de teclado que se mostrará en pantalla.
+        // En este caso, KeyboardType.Number muestra un teclado numérico para ingresar montos.
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
     )
+
+    // (Nota) Actualmente el importe calculado de la propina ('tip') no se muestra en pantalla
+    // dentro de esta función. En la siguiente sección se elevará el estado para que pueda
+    // ser usado desde TipTimeLayout() y así mostrar el importe de la propina en la UI.
+    
 }
 
 /**
