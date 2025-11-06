@@ -44,6 +44,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -111,6 +113,12 @@ fun EditNumberField(modifier: Modifier = Modifier) {
         // Actualiza el valor de 'amountInput', lo que provoca una recomposición
         // y actualiza automáticamente la interfaz con el nuevo valor.
         onValueChange = { amountInput = it },
+        // 'label' muestra un texto descriptivo dentro del campo (por ejemplo, "Bill amount").
+        // Este texto actúa como guía para el usuario y se mueve hacia arriba cuando el campo gana foco.
+        label = { Text(stringResource(R.string.bill_amount)) },
+        // Limita el campo a una sola línea de texto (evita que el usuario agregue saltos de línea).
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = modifier
     )
 }
