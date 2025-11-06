@@ -91,8 +91,9 @@ fun TipTimeLayout() {
  * El parámetro onValueChange es la devolución de llamada lambda que se activa cuando el usuario ingresa texto en el cuadro.
  */
 fun EditNumberField(modifier: Modifier = Modifier) {
+    val amountInput = "0"
     TextField(
-        value = "",
+        value = amountInput,
         onValueChange = {},
         modifier = modifier
     )
