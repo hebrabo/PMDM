@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
 import androidx.compose.material3.TextField
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,15 +88,23 @@ fun TipTimeLayout() {
 }
 
 @Composable
-/* Función que le permite al usuario ingresar texto en la app.
+/* Función componible que le permite al usuario ingresar texto en la app.
  * El parámetro value es un cuadro de texto que muestra el valor de cadena que pasas aquí.
- * El parámetro onValueChange es la devolución de llamada lambda que se activa cuando el usuario ingresa texto en el cuadro.
+ * - El parámetro 'onValueChange' es una lambda que se ejecuta cada vez que el usuario modifica el texto.
+ *   Su propósito es actualizar el valor almacenado y reflejar los cambios en la interfaz.
  */
 fun EditNumberField(modifier: Modifier = Modifier) {
-    val amountInput = "0"
+    // Usa el tipo MutableState<String> para que Compose sepa que debe hacer un seguimiento del estado de amountInput
+    // y pasa una cadena "0", que es el valor inicial predeterminado de la variable de estado amountInput
+    var amountInput = mutableStateOf("0")
     TextField(
-        value = amountInput,
-        onValueChange = {},
+        // 'value' indica el texto que se muestra actualmente en el campo.
+        // En este caso, se obtiene del estado amountInput, por lo que siempre refleja su valor actual.
+        value = amountInput.value,
+        // 'onValueChange' se ejecuta cada vez que el usuario modifica el texto.
+        // Actualiza el valor de amountInput con el nuevo texto ingresado, provocando una recomposición
+        // para que la interfaz muestre el cambio en tiempo real.
+        onValueChange = { amountInput.value = it },
         modifier = modifier
     )
 }
