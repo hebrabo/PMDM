@@ -19,6 +19,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -64,23 +65,35 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-/**
-* Función componible principal que organiza la interfaz de usuario.
+/*
+* Función componible principal que organiza la interfaz de usuario de la app Tip Calculator.
 *
-* - Administra el estado 'amountInput', que representa el texto que el usuario ingresa.
-* - Convierte la entrada a número usando `toDoubleOrNull()` y calcula el importe de la propina con `calculateTip()`.
-* - Muestra el campo de texto (EditNumberField) y el resultado de la propina calculada.
+* - Administra dos variables de estado:
+*     - `amountInput`: texto ingresado por el usuario para el importe de la cuenta.
+*     - `tipInput`: texto ingresado para el porcentaje de propina personalizado.
+* - Convierte ambas entradas a números con `toDoubleOrNull()`, usando 0.0 si no son válidas.
+* - Calcula el importe de la propina con la función auxiliar `calculateTip()`.
+* - Muestra dos campos de texto reutilizando `EditNumberField()` y el resultado del cálculo.
 *
-* La función sigue el patrón de *elevación de estado*, manteniendo el estado en el nivel superior
-* (TipTimeLayout) y pasando los valores necesarios a los elementos componibles hijos.
+* Esta función sigue el patrón de *elevación de estado*: los estados se mantienen aquí y
+* se pasan como parámetros a los elementos componibles hijos, que no almacenan su propio estado.
 */
 fun TipTimeLayout() {
-    // Estado recordado que almacena el texto ingresado por el usuario.
+    // Estado recordado que almacena el texto ingresado por el usuario (importe de la factura).
     var amountInput by remember { mutableStateOf("") }
-    // Convierte el texto a Double o usa 0.0 si no es un número válido.
+
+    // Estado recordado para el porcentaje de propina.
+    var tipInput by remember { mutableStateOf("") }
+
+    // Convierte el importe y el porcentaje a Double, o usa 0.0 si el valor no es válido.
     val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
+
     // Calcula el importe de la propina usando la función auxiliar.
-    val tip = calculateTip(amount)
+    val tip = calculateTip(amount, tipPercent)
+
+
+
     Column(
         modifier = Modifier
             .statusBarsPadding()
@@ -96,16 +109,25 @@ fun TipTimeLayout() {
                 .padding(bottom = 16.dp, top = 40.dp)
                 .align(alignment = Alignment.Start)
         )
-        // Campo de texto que recibe el importe de la cuenta.
-        // Se pasa el valor actual y la función de actualización (estado elevado).
+        // Campo de texto para ingresar el importe de la factura.
         EditNumberField(
+            label = R.string.bill_amount,
             value = amountInput,
             onValueChange = { amountInput = it },
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
-        // Muestra el importe calculado de la propina en formato monetario.
+        // Campo de texto para ingresar el porcentaje de propina personalizado.
+        EditNumberField(
+            label = R.string.how_was_the_service,
+            value = tipInput,
+            onValueChange = { tipInput = it },
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+        // Muestra el importe de la propina calculado, con formato monetario local.
         Text(
             text = stringResource(R.string.tip_amount, tip),
             style = MaterialTheme.typography.displaySmall
@@ -116,43 +138,39 @@ fun TipTimeLayout() {
 
 @Composable
 /*
-* Función componible sin estado que muestra un campo de texto para ingresar el importe.
+* Función componible sin estado que muestra un campo de texto numérico reutilizable.
 *
-* - Recibe dos parámetros principales:
-*   - 'value': el valor actual que se muestra en el campo de texto.
-*   - 'onValueChange': una lambda que se ejecuta cuando el usuario cambia el texto.
+* Parámetros:
+* - `label`: recurso de cadena (Int) usado como etiqueta del campo (por ejemplo, "Bill amount").
+*   La anotación `@StringRes` garantiza que el valor provenga de `strings.xml`.
+* - `value`: valor actual mostrado en el campo.
+* - `onValueChange`: lambda que se ejecuta cada vez que el usuario cambia el texto.
+* - `modifier`: permite aplicar espaciado, tamaño o posición personalizados.
 *
-* Esta función no almacena estado propio; el valor y las actualizaciones se manejan desde
-* la función que la llama (TipTimeLayout), siguiendo el principio de *elevación de estado*.
+* Esta función es reutilizable y no gestiona estado propio: el valor y la actualización se
+* controlan desde el nivel superior (TipTimeLayout).
 */
 fun EditNumberField(
+    @StringRes label: Int,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Campo de texto para ingreso numérico.
+    // Campo de texto que permite ingresar solo números.
     TextField(
-        // Muestra el valor actual recibido como parámetro.
-        value = value,
-        // Llama a la función proporcionada cuando el usuario modifica el texto.
-        onValueChange = onValueChange,
-        /// 'label' muestra una descripción del campo (por ejemplo, "Bill amount").
-        // El texto se desplaza hacia arriba cuando el campo obtiene foco.
-        label = { Text(stringResource(R.string.bill_amount)) },
-        // Limita el campo a una sola línea de texto (evita que el usuario agregue saltos de línea).
-        singleLine = true,
-        // 'keyboardOptions' define el tipo de teclado que se mostrará en pantalla.
-        // En este caso, KeyboardType.Number muestra un teclado numérico para ingresar montos.
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        value = value, // Muestra el valor actual.
+        onValueChange = onValueChange, // Actualiza el estado cuando el usuario escribe.
+        label = { Text(stringResource(label)) }, // Usa el recurso de cadena como etiqueta del campo.
+        singleLine = true, // Limita el campo a una sola línea de texto.
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), // Muestra teclado numérico.
         modifier = modifier
     )
 
 }
 
 /**
- * Calculates the tip based on the user input and format the tip amount
- * according to the local currency.
- * Example would be "$10.00".
+ * Función auxiliar que calcula la propina según los valores ingresados y la formatea
+ * con el símbolo de moneda local (por ejemplo, "$10.00").
  */
 private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
     val tip = tipPercent / 100 * amount
