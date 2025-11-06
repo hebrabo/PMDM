@@ -19,6 +19,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -54,6 +55,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,16 +76,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
         /**
-         * Función componible principal que organiza la interfaz de usuario de la app Tip Time.
+         * Función componible principal que construye la interfaz de la app Tip Time.
          *
-         * Esta función:
-         * - Gestiona el estado de los campos de texto y del interruptor de redondeo.
-         * - Convierte las entradas del usuario en valores numéricos.
-         * - Calcula el importe de la propina mediante `calculateTip()`.
-         * - Muestra campos de texto, un interruptor (Switch) y el resultado calculado.
-         *
-         * Sigue el patrón de **elevación de estado**: los elementos hijos (como los campos o el switch)
-         * no almacenan su propio estado, sino que lo reciben como parámetros y notifican los cambios.
+         * - Administra los estados del importe, porcentaje y opción de redondeo.
+         * - Convierte los valores de texto a Double y calcula la propina usando `calculateTip()`.
+         * - Muestra campos de entrada, un interruptor de redondeo y el resultado calculado.
+         * - Habilita desplazamiento vertical para adaptarse a pantallas horizontales.
          */
 fun TipTimeLayout() {
     // Estado recordado que almacena el texto ingresado por el usuario (importe de la factura).
@@ -121,9 +120,11 @@ fun TipTimeLayout() {
                 .align(alignment = Alignment.Start)
         )
         // Campo de texto para ingresar el importe de la factura.
-        // Usa ImeAction.Next para avanzar al siguiente campo del formulario.
+        // Incluye un ícono de dinero para indicar visualmente el tipo de dato esperado.
+        // Usa ImeAction.Next para pasar al siguiente campo del formulario.
         EditNumberField(
             label = R.string.bill_amount,
+            leadingIcon = R.drawable.money,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -135,9 +136,11 @@ fun TipTimeLayout() {
                 .fillMaxWidth()
         )
         // Campo de texto para ingresar el porcentaje de propina personalizado.
+        // Muestra un ícono de porcentaje (％) como referencia visual del valor esperado.
         // Usa ImeAction.Done para indicar que el usuario ha terminado la entrada.
         EditNumberField(
             label = R.string.how_was_the_service,
+            leadingIcon = R.drawable.percent,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done
@@ -172,7 +175,9 @@ fun TipTimeLayout() {
          * Parámetros:
          *  - `label`: recurso de cadena usado como etiqueta del campo (por ejemplo, "Bill amount").
          *    Anotado con `@StringRes` para garantizar que el valor provenga de `strings.xml`.
-         *  - `keyboardOptions`: opciones de teclado, incluyendo tipo de entrada e `ImeAction`.
+         * @param leadingIcon Ícono que se muestra al inicio del campo de texto.
+         *  Ayuda a comunicar visualmente el tipo de información esperada.
+         * *  - `keyboardOptions`: opciones de teclado, incluyendo tipo de entrada e `ImeAction`.
          *  - `value`: texto actual que se muestra en el campo.
          *  - `onValueChange`: callback que se ejecuta cuando el usuario modifica el texto.
          *  - `modifier`: permite personalizar el espaciado, tamaño o posición del campo.
@@ -181,14 +186,17 @@ fun TipTimeLayout() {
          */
 fun EditNumberField(
     @StringRes label: Int,
+    @DrawableRes leadingIcon: Int,
     keyboardOptions: KeyboardOptions,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Campo de texto que permite ingresar solo números.
+    // `leadingIcon` muestra el ícono recibido como parámetro (por ejemplo, dinero o porcentaje).
     TextField(
         value = value, // Muestra el valor actual.
+        leadingIcon = { Icon(painter = painterResource(id = leadingIcon), null) }, // Ícono que se muestra al inicio del campo de texto.
         onValueChange = onValueChange, // Actualiza el estado cuando el usuario escribe.
         label = { Text(stringResource(label)) }, // Usa el recurso de cadena como etiqueta del campo.
         singleLine = true, // Limita el campo a una sola línea de texto.
