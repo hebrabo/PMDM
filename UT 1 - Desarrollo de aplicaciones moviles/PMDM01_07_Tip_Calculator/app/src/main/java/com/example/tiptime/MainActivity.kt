@@ -58,6 +58,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Icon
 import androidx.compose.ui.res.painterResource
 import org.jetbrains.annotations.VisibleForTesting
+import androidx.compose.ui.platform.testTag
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,6 +136,7 @@ fun TipTimeLayout() {
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
+                .testTag("billAmountField") // Añadido para pruebas
         )
         // Campo de texto para ingresar el porcentaje de propina personalizado.
         // Muestra un ícono de porcentaje (％) como referencia visual del valor esperado.
@@ -151,19 +153,23 @@ fun TipTimeLayout() {
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
+                .testTag("tipPercentageField") // Añadido para pruebas
         )
 
         // Fila con el texto "Round up tip?" y el interruptor (Switch) correspondiente.
         RoundTheTipRow(
             roundUp = roundUp,
             onRoundUpChanged = { roundUp = it },
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .testTag("roundUpSwitch") // Añadido para identificar el interruptor
         )
 
         // Muestra el importe de la propina calculado, con formato monetario local.
         Text(
             text = stringResource(R.string.tip_amount, tip),
-            style = MaterialTheme.typography.displaySmall
+            style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier.testTag("tipAmountText") // Añadido para pruebas
         )
         Spacer(modifier = Modifier.height(150.dp))
     }
@@ -230,7 +236,8 @@ fun RoundTheTipRow(
         Switch(
             modifier = modifier
                 .fillMaxWidth()
-                .wrapContentWidth(Alignment.End),
+                .wrapContentWidth(Alignment.End)
+                .testTag("roundUpSwitch"), // Añadido para pruebas
             checked = roundUp,
             onCheckedChange = onRoundUpChanged,
         )

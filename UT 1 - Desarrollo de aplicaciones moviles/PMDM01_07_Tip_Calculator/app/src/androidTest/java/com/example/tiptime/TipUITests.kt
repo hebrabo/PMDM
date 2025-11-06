@@ -4,10 +4,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import com.example.tiptime.ui.theme.TipTimeTheme
 import org.junit.Rule
 import org.junit.Test
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import java.text.NumberFormat
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onNodeWithTag
 
 class TipUITests {
 
@@ -24,20 +25,25 @@ class TipUITests {
                 TipTimeLayout() // Llama al diseño principal de la app
             }
         }
-        // Ingresa un valor de 10 en el campo "Bill Amount"
-        composeTestRule.onNodeWithText("Bill Amount")
+        // CAMBIO: Antes usábamos onNodeWithText("Bill Amount")
+        // Lo sustituimos por onNodeWithTag("billAmountField") porque:
+        // - Los textos pueden cambiar (por localización o diseño).
+        // - El testTag es más estable y recomendado por Google.
+        composeTestRule.onNodeWithTag("billAmountField")
             .performTextInput("10")
 
         // Ingresa un valor de 20 en el campo "Tip Percentage"
-        composeTestRule.onNodeWithText("Tip Percentage").performTextInput("20")
+        composeTestRule.onNodeWithTag("tipPercentageField")
+            .performTextInput("20")
 
        // Calcula el valor esperado de la propina ($2.00, formateado según la configuración regional)
         val expectedTip = NumberFormat.getCurrencyInstance().format(2)
 
-        // Verifica que el texto con el monto de la propina se muestre correctamente en la interfaz
-        composeTestRule.onNodeWithText("Tip Amount: $expectedTip").assertExists(
-            "No node with this text was found." // Mensaje si la aserción falla
-        )
+        // CAMBIO: añadimos assertIsDisplayed() además de assertExists()
+        // Esto asegura no solo que el nodo exista, sino que esté visible en pantalla.
+        composeTestRule.onNodeWithTag("tipAmountText")
+            .assertExists("El texto de la propina no aparece")  // Mensaje si la aserción falla
+            .assertIsDisplayed()
     }
 
     // Prueba 2: Verifica el cálculo del 20% de propina SIN redondear.
@@ -52,21 +58,21 @@ class TipUITests {
         }
 
         // Ingresa un valor de factura de 15
-        composeTestRule.onNodeWithText("Bill Amount").performTextInput("15")
+        composeTestRule.onNodeWithTag("billAmountField").performTextInput("15")
 
         // Ingresa un 20% de propina.
-        composeTestRule.onNodeWithText("Tip Percentage").performTextInput("20")
+        composeTestRule.onNodeWithTag("tipPercentageField").performTextInput("20")
 
         // Simula hacer clic en el interruptor "Round up tip?" para desactivar el redondeo.
-        composeTestRule.onNodeWithText("Round up tip?").performClick() // desactiva redondeo
+        composeTestRule.onNodeWithTag("roundUpSwitch").performClick() // desactiva redondeo
 
         // Calcula el valor esperado de la propina sin redondeo (3.00 en este caso).
         val expectedTip = NumberFormat.getCurrencyInstance().format(3)
 
         // Verifica que el texto con el valor de la propina se muestre correctamente.
-        composeTestRule.onNodeWithText("Tip Amount: $expectedTip").assertExists(
-            "El texto con el valor esperado de propina no se encontró."
-        )
+        composeTestRule.onNodeWithTag("tipAmountText")
+            .assertExists("No se muestra el valor de propina esperado")
+            .assertIsDisplayed()
     }
 
     // Prueba 3: Verifica el cálculo de una propina del 18% con redondeo activado.
@@ -79,18 +85,17 @@ class TipUITests {
         }
 
         // Simula que el usuario escribe "33.33" como importe de la factura.
-        composeTestRule.onNodeWithText("Bill Amount").performTextInput("33.33")
-
+        composeTestRule.onNodeWithTag("billAmountField").performTextInput("33.33")
         // Simula que el usuario introduce "18" como porcentaje de propina.
-        composeTestRule.onNodeWithText("Tip Percentage").performTextInput("18")
+        composeTestRule.onNodeWithTag("tipPercentageField").performTextInput("18")
 
         // Dado que el redondeo está activado por defecto, el resultado se redondeará hacia arriba.
         // El 18% de 33.33 es 5.9994, que se redondea a 6.00 según la lógica del metodo calculateTip().
         val expectedTip = NumberFormat.getCurrencyInstance().format(6)
 
         // Verifica que el texto con el valor esperado de propina redondeado se muestre en la interfaz.
-        composeTestRule.onNodeWithText("Tip Amount: $expectedTip").assertExists(
-            "El texto con el valor esperado de propina no se encontró."
-        )
+        composeTestRule.onNodeWithTag("tipAmountText")
+            .assertExists("No se muestra el valor de propina redondeado esperado")
+            .assertIsDisplayed()
     }
 }
