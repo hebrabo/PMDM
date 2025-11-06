@@ -48,6 +48,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material3.Switch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,22 +70,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-        /*
-         * Función componible principal que organiza la interfaz de usuario de la app Tip Calculator.
+        /**
+         * Función componible principal que organiza la interfaz de usuario de la app Tip Time.
          *
-         * - Administra dos variables de estado:
-         *      - `amountInput`: texto ingresado para el importe de la cuenta.
-         *      - `tipInput`: texto ingresado para el porcentaje de propina personalizado.
-         * - Convierte las entradas de texto en valores numéricos usando `toDoubleOrNull()`.
-         * - Calcula el valor de la propina mediante la función `calculateTip()`.
-         * - Muestra dos campos de texto reutilizando `EditNumberField()`, y el resultado calculado.
+         * Esta función:
+         * - Gestiona el estado de los campos de texto y del interruptor de redondeo.
+         * - Convierte las entradas del usuario en valores numéricos.
+         * - Calcula el importe de la propina mediante `calculateTip()`.
+         * - Muestra campos de texto, un interruptor (Switch) y el resultado calculado.
          *
-         * Además, configura diferentes acciones de teclado:
-         *   - El campo "Bill Amount" usa `ImeAction.Next` para avanzar al siguiente campo.
-         *   - El campo "Tip Percentage" usa `ImeAction.Done` para indicar que se terminó la entrada.
-         *
-         * Esta función sigue el patrón de *elevación de estado*:
-         * los elementos hijos no almacenan su propio estado, sino que reciben valores y callbacks.
+         * Sigue el patrón de **elevación de estado**: los elementos hijos (como los campos o el switch)
+         * no almacenan su propio estado, sino que lo reciben como parámetros y notifican los cambios.
          */
 fun TipTimeLayout() {
     // Estado recordado que almacena el texto ingresado por el usuario (importe de la factura).
@@ -94,8 +93,10 @@ fun TipTimeLayout() {
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipInput.toDoubleOrNull() ?: 0.0
 
-    // Calcula el valor de la propina según los datos ingresados.
-    val tip = calculateTip(amount, tipPercent)
+    var roundUp by remember { mutableStateOf(false) }
+
+    // Calcula la propina en función del importe, el porcentaje y el estado del interruptor.
+    val tip = calculateTip(amount, tipPercent, roundUp)
 
 
 
@@ -142,6 +143,14 @@ fun TipTimeLayout() {
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
+
+        // Fila con el texto "Round up tip?" y el interruptor (Switch) correspondiente.
+        RoundTheTipRow(
+            roundUp = roundUp,
+            onRoundUpChanged = { roundUp = it },
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+
         // Muestra el importe de la propina calculado, con formato monetario local.
         Text(
             text = stringResource(R.string.tip_amount, tip),
@@ -184,15 +193,60 @@ fun EditNumberField(
 
 }
 
+@Composable
+        /**
+         * Fila que muestra un texto descriptivo y un interruptor (Switch) para redondear la propina.
+         *
+         * @param roundUp indica si el interruptor está activado.
+         * @param onRoundUpChanged callback que actualiza el estado cuando el usuario cambia el valor.
+         * @param modifier permite personalizar el espaciado o la posición de la fila.
+         */
+fun RoundTheTipRow(
+    roundUp: Boolean,
+    onRoundUpChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .size(48.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = stringResource(R.string.round_up_tip))
+        Switch(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentWidth(Alignment.End),
+            checked = roundUp,
+            onCheckedChange = onRoundUpChanged,
+        )
+    }
+}
+
 /**
- * Función auxiliar que calcula la propina según los valores ingresados y la formatea
- * con el símbolo de moneda local (por ejemplo, "$10.00").
+ * Calcula el importe de la propina según los valores ingresados.
+ *
+ * @param amount importe total de la factura.
+ * @param tipPercent porcentaje de propina.
+ * @param roundUp si es `true`, redondea el valor al número entero más próximo.
+ *
+ * @return una cadena formateada en la moneda local, por ejemplo "$10.00".
  */
-private fun calculateTip(amount: Double, tipPercent: Double = 15.0): String {
-    val tip = tipPercent / 100 * amount
+private fun calculateTip(
+    amount: Double,
+    tipPercent: Double = 15.0,
+    roundUp: Boolean
+): String {
+    var tip = tipPercent / 100 * amount
+    if (roundUp) {
+        tip = kotlin.math.ceil(tip)
+    }
     return NumberFormat.getCurrencyInstance().format(tip)
 }
 
+/**
+ * Vista previa de la interfaz en el editor de Android Studio.
+ */
 @Preview(showBackground = true)
 @Composable
 fun TipTimeLayoutPreview() {
