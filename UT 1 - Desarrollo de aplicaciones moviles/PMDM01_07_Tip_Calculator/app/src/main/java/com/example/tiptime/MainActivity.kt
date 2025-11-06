@@ -40,8 +40,10 @@ import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,22 +91,26 @@ fun TipTimeLayout() {
 
 @Composable
 /* Función componible que le permite al usuario ingresar texto en la app.
- * El parámetro value es un cuadro de texto que muestra el valor de cadena que pasas aquí.
+ * - El parámetro value es un cuadro de texto que muestra el valor de cadena que pasas aquí.
  * - El parámetro 'onValueChange' es una lambda que se ejecuta cada vez que el usuario modifica el texto.
  *   Su propósito es actualizar el valor almacenado y reflejar los cambios en la interfaz.
- */
+ * Esta función utiliza la API de estado de Jetpack Compose para recordar y conservar el valor del texto
+ * incluso después de las recomposiciones, gracias al uso de 'remember' y 'mutableStateOf'.
+ * */
 fun EditNumberField(modifier: Modifier = Modifier) {
-    // Usa el tipo MutableState<String> para que Compose sepa que debe hacer un seguimiento del estado de amountInput
-    // y pasa una cadena "0", que es el valor inicial predeterminado de la variable de estado amountInput
-    var amountInput = mutableStateOf("0")
+    // Se declara una variable de estado 'amountInput' utilizando el delegado 'by' de Kotlin.
+    // 'remember' asegura que el valor de 'amountInput' se conserve entre recomposiciones,
+    // evitando que se reinicie a su valor inicial cada vez que la UI se vuelva a dibujar.
+    // 'mutableStateOf("")' crea un estado observable con una cadena vacía como valor inicial.
+    var amountInput by remember { mutableStateOf("") }
+    // Componente de entrada de texto que muestra y actualiza el valor de 'amountInput'.
     TextField(
-        // 'value' indica el texto que se muestra actualmente en el campo.
-        // En este caso, se obtiene del estado amountInput, por lo que siempre refleja su valor actual.
-        value = amountInput.value,
-        // 'onValueChange' se ejecuta cada vez que el usuario modifica el texto.
-        // Actualiza el valor de amountInput con el nuevo texto ingresado, provocando una recomposición
-        // para que la interfaz muestre el cambio en tiempo real.
-        onValueChange = { amountInput.value = it },
+        // Muestra el texto actual almacenado en la variable de estado 'amountInput'.
+        value = amountInput,
+        // Se ejecuta cada vez que el usuario modifica el texto en el campo.
+        // Actualiza el valor de 'amountInput', lo que provoca una recomposición
+        // y actualiza automáticamente la interfaz con el nuevo valor.
+        onValueChange = { amountInput = it },
         modifier = modifier
     )
 }
