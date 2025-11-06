@@ -64,13 +64,16 @@ data class Artwork(
 
 @Composable
 fun ArtSpaceApp(modifier: Modifier = Modifier) {
-    var currentArtwork by remember { mutableStateOf(0) }
+
 
     val artworks = listOf(
         Artwork(R.drawable.munch_el_grito, "El grito", "Munch", "1893"),
         Artwork(R.drawable.vermeer_joven_de_la_perla, "La joven de la perla", "Vermeer", "1665"),
         Artwork(R.drawable.vangogh_la_noche_estrellada, "La noche estrellada", "Van Gogh", "1889")
     )
+
+    var currentArtwork by remember { mutableStateOf<Artwork>(artworks[0]) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -79,10 +82,9 @@ fun ArtSpaceApp(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ){
         Image(
-            painter = painterResource(id = artworks[currentArtwork].imageRes),
-            contentDescription = artworks[currentArtwork].title,
-            modifier = Modifier
-                .fillMaxWidth(),
+            painter = painterResource(id = currentArtwork.imageRes),
+            contentDescription = currentArtwork.title,
+            modifier = Modifier.fillMaxWidth(),
             contentScale = ContentScale.Fit
         )
 
@@ -96,19 +98,19 @@ fun ArtSpaceApp(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = artworks[currentArtwork].title,
+                text = currentArtwork.title,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
             Text(
-                text = artworks[currentArtwork].artist,
+                text = currentArtwork.artist,
                 fontSize = 18.sp,
                 fontStyle = FontStyle.Italic,
                 color = Color.DarkGray
             )
             Text(
-                text = artworks[currentArtwork].year,
+                text = currentArtwork.year,
                 fontSize = 16.sp,
                 color = Color.DarkGray
             )
@@ -123,17 +125,14 @@ fun ArtSpaceApp(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ){
             Button(onClick = {
-                // Si estamos en la primera obra, ir a la última
-                currentArtwork = if (currentArtwork > 0) currentArtwork - 1 else artworks.size - 1
-            }) {
-                Text("Anterior")
-            }
+                val currentIndex = artworks.indexOf(currentArtwork)
+                currentArtwork = if (currentIndex == 0) artworks.last() else artworks[currentIndex - 1]
+            }) { Text("Anterior") }
+
             Button(onClick = {
-                // Si estamos en la última obra, ir a la primera
-                currentArtwork = if (currentArtwork < artworks.size - 1) currentArtwork + 1 else 0
-            }) {
-                Text("Siguiente")
-            }
+                val currentIndex = artworks.indexOf(currentArtwork)
+                currentArtwork = if (currentIndex == artworks.lastIndex) artworks.first() else artworks[currentIndex + 1]
+            }) { Text("Siguiente") }
         }
     }
 
