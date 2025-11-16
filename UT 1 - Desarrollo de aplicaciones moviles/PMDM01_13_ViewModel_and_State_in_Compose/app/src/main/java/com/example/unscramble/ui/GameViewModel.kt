@@ -105,6 +105,14 @@ class GameViewModel : ViewModel() {
             )
         }
     }
+
+    fun skipWord() {
+        // Actualiza el juego sin modificar la puntuación.
+        // Genera una nueva palabra, incrementa el contador y resetea estado de error.
+        updateGameState(_uiState.value.score)
+        // Limpia el texto ingresado por el usuario para la siguiente ronda.
+        updateUserGuess("")
+    }
 }
 
 

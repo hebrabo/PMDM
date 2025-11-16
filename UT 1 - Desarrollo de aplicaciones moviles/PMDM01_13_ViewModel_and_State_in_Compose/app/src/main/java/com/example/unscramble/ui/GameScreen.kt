@@ -92,6 +92,7 @@ fun GameScreen(
             // Cada vez que gameUiState.currentScrambledWord cambie, GameLayout se recompondrá automáticamente.
             currentScrambledWord = gameUiState.currentScrambledWord,
             userGuess = gameViewModel.userGuess, // Valor actual del intento del usuario
+            wordCount = gameUiState.currentWordCount, // Pasa la cantidad de palabras que lleva completadas el jugador.
             onUserGuessChanged = { gameViewModel.updateUserGuess(it) }, // Actualiza el intento en ViewModel
             onKeyboardDone = { gameViewModel.checkUserGuess() }, // Verifica intento al presionar Done
             isGuessWrong = gameUiState.isGuessedWordWrong, // Indica si el intento es incorrecto
@@ -120,7 +121,8 @@ fun GameScreen(
             }
 
             OutlinedButton(
-                onClick = { },
+                // Al hacer clic en "Skip", se salta la palabra actual y se genera una nueva
+                onClick = { gameViewModel.skipWord() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -130,11 +132,13 @@ fun GameScreen(
             }
         }
 
-        GameStatus(score = 0, modifier = Modifier.padding(20.dp))
+        GameStatus(score = gameUiState.score, modifier = Modifier.padding(20.dp))
     }
 }
 
 @Composable
+// Muestra la puntuación actual obtenida por el jugador.
+// Se actualiza automáticamente cuando uiState.score cambia.
 fun GameStatus(score: Int, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
@@ -152,10 +156,11 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 // y callbacks para actualizar el intento y manejar la acción "Done" del teclado
 fun GameLayout(
     currentScrambledWord: String, // Recibe la palabra desordenada actual como argumento para mostrarla en la UI
-    isGuessWrong: Boolean,
+    isGuessWrong: Boolean, // Indica si el intento anterior fue incorrecto
     userGuess: String, // Texto ingresado por el usuario
     onUserGuessChanged: (String) -> Unit, // Callback para actualizar userGuess en ViewModel
-    onKeyboardDone: () -> Unit,
+    onKeyboardDone: () -> Unit, // Callback al presionar "Done" en el teclado
+    wordCount: Int, // Número de palabra actual que se está jugando
 
     modifier: Modifier = Modifier
 ) {
@@ -176,7 +181,8 @@ fun GameLayout(
                     .background(colorScheme.surfaceTint)
                     .padding(horizontal = 10.dp, vertical = 4.dp)
                     .align(alignment = Alignment.End),
-                text = stringResource(R.string.word_count, 0),
+                // Muestra el contador de palabras usando el recurso string con formato
+                text = stringResource(R.string.word_count, wordCount),
                 style = typography.titleMedium,
                 color = colorScheme.onPrimary
             )
