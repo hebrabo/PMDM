@@ -6,4 +6,5 @@ data class GameUiState(
     val isGuessedWordWrong: Boolean = false, // Indica si el intento del usuario es incorrecto
     val score: Int = 0, // Puntuación acumulada del jugador
     val currentWordCount: Int = 1, // Número de palabra actual en el juego
+    val isGameOver: Boolean = false // Indica si se alcanzó el límite de palabras y el juego terminó
 )

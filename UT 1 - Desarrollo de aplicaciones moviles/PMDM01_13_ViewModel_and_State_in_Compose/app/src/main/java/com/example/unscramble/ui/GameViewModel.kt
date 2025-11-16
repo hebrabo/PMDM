@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.room.util.copy
 import com.example.unscramble.data.SCORE_INCREASE
 import kotlinx.coroutines.flow.update
+import com.example.unscramble.data.MAX_NO_OF_WORDS
 
 class GameViewModel : ViewModel() {
 
@@ -96,6 +97,27 @@ class GameViewModel : ViewModel() {
 
     // Función que actualiza el estado de la UI para la próxima ronda
     private fun updateGameState(updatedScore: Int) {
+        // Verifica si ya se llegó al número máximo de palabras permitidas.
+        // Si usedWords.size == MAX_NO_OF_WORDS, significa que el juego debe terminar.
+        if (usedWords.size == MAX_NO_OF_WORDS){
+            // Última ronda del juego:
+            // - No se selecciona una nueva palabra.
+            // - Se actualiza la puntuación final.
+            // - Se marca isGameOver como true para que la UI sepa que el juego terminó.
+            // - Se restablece isGuessedWordWrong por si el último intento fue incorrecto.
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isGuessedWordWrong = false,
+                    score = updatedScore,
+                    isGameOver = true // Marca el final del juego
+                )
+        }
+        } else{
+            // Ronda normal del juego:
+            // - Reinicia el estado de error del usuario.
+            // - Genera una nueva palabra desordenada.
+            // - Incrementa el contador de palabras.
+            // - Actualiza la puntuación según el resultado del intento previo.
         _uiState.update { currentState ->
             currentState.copy(
                 isGuessedWordWrong = false, // Reinicia el estado de error
@@ -104,6 +126,7 @@ class GameViewModel : ViewModel() {
                 currentWordCount = currentState.currentWordCount.inc(), // Incrementa contador de palabras
             )
         }
+    }
     }
 
     fun skipWord() {
