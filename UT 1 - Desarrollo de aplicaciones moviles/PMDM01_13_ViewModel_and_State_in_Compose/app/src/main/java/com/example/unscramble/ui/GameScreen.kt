@@ -58,6 +58,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
+
 @Composable
 fun GameScreen(
     // Se pasa el ViewModel al Composable.
@@ -85,10 +86,14 @@ fun GameScreen(
             text = stringResource(R.string.app_name),
             style = typography.titleLarge,
         )
-        // Pasa la palabra desordenada actual desde el ViewModel al Composable GameLayout.
-        // Cada vez que gameUiState.currentScrambledWord cambie, GameLayout se recompondrá automáticamente.
+
         GameLayout(
+            // Pasa la palabra desordenada actual desde el ViewModel al Composable GameLayout.
+            // Cada vez que gameUiState.currentScrambledWord cambie, GameLayout se recompondrá automáticamente.
             currentScrambledWord = gameUiState.currentScrambledWord,
+            userGuess = gameViewModel.userGuess,
+            onUserGuessChanged = { gameViewModel.updateUserGuess(it) },
+            onKeyboardDone = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -141,9 +146,14 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
+// Composable GameLayout que recibe la palabra desordenada actual, el intento del usuario
+// y callbacks para actualizar el intento y manejar la acción "Done" del teclado
 fun GameLayout(
-    // Recibe la palabra desordenada actual como argumento para mostrarla en la UI
-    currentScrambledWord: String,
+    currentScrambledWord: String, // Recibe la palabra desordenada actual como argumento para mostrarla en la UI
+    userGuess: String, // Texto ingresado por el usuario
+    onUserGuessChanged: (String) -> Unit, // Callback para actualizar userGuess en ViewModel
+    onKeyboardDone: () -> Unit,
+
     modifier: Modifier = Modifier
 ) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
@@ -178,8 +188,9 @@ fun GameLayout(
                 textAlign = TextAlign.Center,
                 style = typography.titleMedium
             )
+            // Campo de texto para que el usuario ingrese su intento
             OutlinedTextField(
-                value = "",
+                value = userGuess, // Observa el valor de userGuess desde ViewModel
                 singleLine = true,
                 shape = shapes.large,
                 modifier = Modifier.fillMaxWidth(),
@@ -188,7 +199,7 @@ fun GameLayout(
                     unfocusedContainerColor = colorScheme.surface,
                     disabledContainerColor = colorScheme.surface,
                 ),
-                onValueChange = { },
+                onValueChange = onUserGuessChanged, // Cada cambio actualiza userGuess en ViewModel
                 label = { Text(stringResource(R.string.enter_your_word)) },
                 isError = false,
                 keyboardOptions = KeyboardOptions.Default.copy(
