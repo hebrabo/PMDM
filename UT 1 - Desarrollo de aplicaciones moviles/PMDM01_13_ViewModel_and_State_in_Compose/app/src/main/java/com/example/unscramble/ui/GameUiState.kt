@@ -4,4 +4,6 @@ package com.example.unscramble.ui
 data class GameUiState(
     val currentScrambledWord: String = "", // Palabra desordenada actual
     val isGuessedWordWrong: Boolean = false, // Indica si el intento del usuario es incorrecto
+    val score: Int = 0, // Puntuación acumulada del jugador
+    val currentWordCount: Int = 1, // Número de palabra actual en el juego
 )

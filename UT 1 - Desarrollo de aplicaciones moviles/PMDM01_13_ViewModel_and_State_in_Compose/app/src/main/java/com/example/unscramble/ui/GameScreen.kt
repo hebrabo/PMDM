@@ -204,7 +204,13 @@ fun GameLayout(
                     disabledContainerColor = colorScheme.surface,
                 ),
                 onValueChange = onUserGuessChanged, // Cada cambio actualiza userGuess en ViewModel
-                label = { Text(stringResource(R.string.enter_your_word)) },
+                label = {
+                    if (isGuessWrong) {
+                        Text(stringResource(R.string.wrong_guess)) // Etiqueta de error
+                    } else {
+                        Text(stringResource(R.string.enter_your_word)) // Etiqueta normal
+                    }
+                },
                 isError = isGuessWrong, // Cambia el color y estilo si el intento es incorrecto
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
