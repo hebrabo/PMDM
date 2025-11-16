@@ -62,10 +62,14 @@ class GameViewModel : ViewModel() {
         return String(tempWord)
     }
 
-    // Función que borra todas las palabras del conjunto usedWords, e inicializa el _uiState.
+    // Reinicia toda la lógica interna del ViewModel para comenzar una nueva partida.
+// Limpia la lista de palabras ya usadas y reinicia el estado del juego con una nueva palabra mezclada.
     fun resetGame() {
-        usedWords.clear()
-        _uiState.value = GameUiState(currentScrambledWord = pickRandomWordAndShuffle())
+        usedWords.clear() // Limpia historial para permitir nuevas rondas desde cero
+        // Restablece todo el estado del juego, incluida la nueva palabra desordenada inicial.
+        _uiState.value = GameUiState(
+            currentScrambledWord = pickRandomWordAndShuffle()
+        )
     }
 
     // Función del ViewModel para actualizar el intento del usuario

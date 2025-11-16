@@ -133,6 +133,17 @@ fun GameScreen(
         }
 
         GameStatus(score = gameUiState.score, modifier = Modifier.padding(20.dp))
+
+        // Si el juego llegó a su fin (isGameOver = true), mostramos el diálogo final.
+        // Este diálogo muestra la puntuación obtenida y ofrece dos acciones:
+        // 1. Salir de la app.
+        // 2. Jugar nuevamente (llama a resetGame()).
+        if (gameUiState.isGameOver) {
+            FinalScoreDialog(
+                score = gameUiState.score, // Puntuación final mostrada en el texto del diálogo
+                onPlayAgain = { gameViewModel.resetGame() } // Reinicia el juego desde el ViewModel
+            )
+        }
     }
 }
 
@@ -234,21 +245,22 @@ fun GameLayout(
  */
 @Composable
 private fun FinalScoreDialog(
-    score: Int,
-    onPlayAgain: () -> Unit,
+    score: Int, // Recibe la puntuación final para mostrarla en el mensaje del diálogo
+    onPlayAgain: () -> Unit, // Callback que reinicia el juego al presionar "Play Again"
     modifier: Modifier = Modifier
 ) {
     val activity = (LocalContext.current as Activity)
 
     AlertDialog(
+        // Se ejecuta si el usuario toca fuera del diálogo o presiona atrás.
         onDismissRequest = {
-            // Dismiss the dialog when the user clicks outside the dialog or on the back
-            // button. If you want to disable that functionality, simply use an empty
-            // onCloseRequest.
+            /* Dejamos vacío para evitar cierre accidental */
         },
         title = { Text(text = stringResource(R.string.congratulations)) },
+        // Muestra la puntuación final usando el string con formato del archivo strings.xml
         text = { Text(text = stringResource(R.string.you_scored, score)) },
         modifier = modifier,
+        // Botón "Exit": cierra la actividad y finaliza la app.
         dismissButton = {
             TextButton(
                 onClick = {
@@ -258,6 +270,7 @@ private fun FinalScoreDialog(
                 Text(text = stringResource(R.string.exit))
             }
         },
+        // Botón "Play Again": llama al callback que reinicia el juego
         confirmButton = {
             TextButton(onClick = onPlayAgain) {
                 Text(text = stringResource(R.string.play_again))
