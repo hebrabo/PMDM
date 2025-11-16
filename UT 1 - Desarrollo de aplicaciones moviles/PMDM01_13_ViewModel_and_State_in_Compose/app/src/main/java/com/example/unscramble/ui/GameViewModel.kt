@@ -8,6 +8,8 @@ import com.example.unscramble.data.allWords
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.room.util.copy
+import kotlinx.coroutines.flow.update
 
 class GameViewModel : ViewModel() {
 
@@ -68,5 +70,21 @@ class GameViewModel : ViewModel() {
     fun updateUserGuess(guessedWord: String){
         userGuess = guessedWord
     }
+
+    // ViewModel: función para verificar si el intento del usuario es correcto
+    fun checkUserGuess() {
+
+        if (userGuess.equals(currentWord, ignoreCase = true)) {
+        } else {
+            // Si la palabra es incorrecta, se marca el intento como erróneo en el estado de la UI
+            _uiState.update { currentState ->
+                currentState.copy(isGuessedWordWrong = true)
+        }
+            // Reinicia el intento del usuario para permitir un nuevo intento
+        updateUserGuess("")
+        }
+    }
 }
+
+
 

@@ -91,9 +91,10 @@ fun GameScreen(
             // Pasa la palabra desordenada actual desde el ViewModel al Composable GameLayout.
             // Cada vez que gameUiState.currentScrambledWord cambie, GameLayout se recompondrá automáticamente.
             currentScrambledWord = gameUiState.currentScrambledWord,
-            userGuess = gameViewModel.userGuess,
-            onUserGuessChanged = { gameViewModel.updateUserGuess(it) },
-            onKeyboardDone = { },
+            userGuess = gameViewModel.userGuess, // Valor actual del intento del usuario
+            onUserGuessChanged = { gameViewModel.updateUserGuess(it) }, // Actualiza el intento en ViewModel
+            onKeyboardDone = { gameViewModel.checkUserGuess() }, // Verifica intento al presionar Done
+            isGuessWrong = gameUiState.isGuessedWordWrong, // Indica si el intento es incorrecto
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -107,9 +108,10 @@ fun GameScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
+            // Botón Submit en GameScreen que envía el intento del usuario al ViewModel
             Button(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { }
+                onClick = { gameViewModel.checkUserGuess() } // Llama a checkUserGuess al hacer clic
             ) {
                 Text(
                     text = stringResource(R.string.submit),
@@ -150,6 +152,7 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 // y callbacks para actualizar el intento y manejar la acción "Done" del teclado
 fun GameLayout(
     currentScrambledWord: String, // Recibe la palabra desordenada actual como argumento para mostrarla en la UI
+    isGuessWrong: Boolean,
     userGuess: String, // Texto ingresado por el usuario
     onUserGuessChanged: (String) -> Unit, // Callback para actualizar userGuess en ViewModel
     onKeyboardDone: () -> Unit,
@@ -189,6 +192,7 @@ fun GameLayout(
                 style = typography.titleMedium
             )
             // Campo de texto para que el usuario ingrese su intento
+            // usa isGuessWrong para mostrar error visual
             OutlinedTextField(
                 value = userGuess, // Observa el valor de userGuess desde ViewModel
                 singleLine = true,
@@ -201,7 +205,7 @@ fun GameLayout(
                 ),
                 onValueChange = onUserGuessChanged, // Cada cambio actualiza userGuess en ViewModel
                 label = { Text(stringResource(R.string.enter_your_word)) },
-                isError = false,
+                isError = isGuessWrong, // Cambia el color y estilo si el intento es incorrecto
                 keyboardOptions = KeyboardOptions.Default.copy(
                     imeAction = ImeAction.Done
                 ),
