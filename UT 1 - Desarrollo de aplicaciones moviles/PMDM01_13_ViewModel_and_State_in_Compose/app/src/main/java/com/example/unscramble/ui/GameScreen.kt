@@ -54,9 +54,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.unscramble.R
 import com.example.unscramble.ui.theme.UnscrambleTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
-fun GameScreen() {
+fun GameScreen(
+    // Se pasa el ViewModel al Composable.
+    // Si no se proporciona, se crea uno por defecto usando la función viewModel().
+    gameViewModel: GameViewModel = viewModel()
+) {
+    // Observa el estado de la UI desde el StateFlow expuesto por el ViewModel.
+    // collectAsState() convierte el StateFlow en un State de Compose que se actualiza automáticamente
+    // cuando el StateFlow emite un nuevo valor, provocando la recomposición de los Composables que lo usan.
+    val gameUiState by gameViewModel.uiState.collectAsState()
+
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Column(
@@ -73,7 +85,10 @@ fun GameScreen() {
             text = stringResource(R.string.app_name),
             style = typography.titleLarge,
         )
+        // Pasa la palabra desordenada actual desde el ViewModel al Composable GameLayout.
+        // Cada vez que gameUiState.currentScrambledWord cambie, GameLayout se recompondrá automáticamente.
         GameLayout(
+            currentScrambledWord = gameUiState.currentScrambledWord,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
@@ -126,7 +141,11 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GameLayout(modifier: Modifier = Modifier) {
+fun GameLayout(
+    // Recibe la palabra desordenada actual como argumento para mostrarla en la UI
+    currentScrambledWord: String,
+    modifier: Modifier = Modifier
+) {
     val mediumPadding = dimensionResource(R.dimen.padding_medium)
 
     Card(
@@ -148,9 +167,11 @@ fun GameLayout(modifier: Modifier = Modifier) {
                 style = typography.titleMedium,
                 color = colorScheme.onPrimary
             )
+            // Muestra la palabra desordenada en la parte superior del layout
             Text(
-                text = "scrambleun",
-                style = typography.displayMedium
+                text = currentScrambledWord, // Muestra la palabra desordenada en la parte superior del layout
+                fontSize = 45.sp,
+                modifier = modifier.align(Alignment.CenterHorizontally)
             )
             Text(
                 text = stringResource(R.string.instructions),
