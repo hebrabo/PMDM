@@ -73,26 +73,39 @@ import com.example.dessertclicker.ui.theme.DessertClickerTheme
 import android.util.Log
 import androidx.compose.runtime.saveable.rememberSaveable
 
+// TAG para usar en Logcat y depuración
 private const val TAG = "MainActivity"
+
+/**
+ * Actividad principal de la app
+ * Hereda de ComponentActivity, que permite usar Jetpack Compose
+ */
 class MainActivity : ComponentActivity() {
+    /**
+     * onCreate se llama cuando la actividad se crea por primera vez.
+     * Es equivalente a la "fase de huevo" del ciclo de vida de la actividad.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
-        Log.d(TAG, "onCreate Called")
+        Log.d(TAG, "onCreate Called") // Registro en Logcat para depuración
+        // setContent define la UI usando Compose
         setContent {
-            DessertClickerTheme {
+            DessertClickerTheme { // Tema de la app
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding(),
                 ) {
+                    // Llamada al composable principal de la app
                     DessertClickerApp(desserts = Datasource.dessertList)
                 }
             }
         }
     }
 
+    // Los siguientes métodos registran el ciclo de vida de la actividad
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart Called")
@@ -125,21 +138,21 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * Determine which dessert to show.
+ * Determina qué postre mostrar según la cantidad de postres vendidos.
+ * Recibe la lista completa de postres y el número de postres vendidos.
  */
 fun determineDessertToShow(
     desserts: List<Dessert>,
     dessertsSold: Int
 ): Dessert {
-    var dessertToShow = desserts.first()
+    var dessertToShow = desserts.first() // Inicia con el primer postre
     for (dessert in desserts) {
+        // Si se han vendido suficientes postres, avanzamos al siguiente más caro
         if (dessertsSold >= dessert.startProductionAmount) {
             dessertToShow = dessert
         } else {
-            // The list of desserts is sorted by startProductionAmount. As you sell more desserts,
-            // you'll start producing more expensive desserts as determined by startProductionAmount
-            // We know to break as soon as we see a dessert who's "startProductionAmount" is greater
-            // than the amount sold.
+            // La lista está ordenada, así que podemos salir del ciclo tan pronto como encontremos
+            // un postre que aún no se ha desbloqueado
             break
         }
     }
@@ -148,7 +161,8 @@ fun determineDessertToShow(
 }
 
 /**
- * Share desserts sold information using ACTION_SEND intent
+ * Función que comparte la información de postres vendidos
+ * utilizando un Intent ACTION_SEND para otras apps.
  */
 private fun shareSoldDessertsInformation(intentContext: Context, dessertsSold: Int, revenue: Int) {
     val sendIntent = Intent().apply {
@@ -162,6 +176,7 @@ private fun shareSoldDessertsInformation(intentContext: Context, dessertsSold: I
 
     val shareIntent = Intent.createChooser(sendIntent, null)
 
+    // Intent seguro: si no hay app para compartir, mostramos un Toast
     try {
         ContextCompat.startActivity(intentContext, shareIntent, null)
     } catch (e: ActivityNotFoundException) {
@@ -174,14 +189,19 @@ private fun shareSoldDessertsInformation(intentContext: Context, dessertsSold: I
 }
 
 @Composable
+/**
+ * Composable principal de la app.
+ * Maneja el estado de ingresos, postres vendidos y el postre actual.
+ */
 private fun DessertClickerApp(
     desserts: List<Dessert>
 ) {
 
-    var revenue by rememberSaveable { mutableStateOf(0) }
-    var dessertsSold by rememberSaveable { mutableStateOf(0) }
+    // Variables de estado que Compose recuerda incluso durante cambios de configuración
+    var revenue by rememberSaveable { mutableStateOf(0) } // ingresos totales
+    var dessertsSold by rememberSaveable { mutableStateOf(0) } // postres vendidos
 
-    val currentDessertIndex by rememberSaveable { mutableStateOf(0) }
+    val currentDessertIndex by rememberSaveable { mutableStateOf(0) } // índice del postre actual
 
     var currentDessertPrice by rememberSaveable {
         mutableStateOf(desserts[currentDessertIndex].price)
@@ -190,12 +210,17 @@ private fun DessertClickerApp(
         mutableStateOf(desserts[currentDessertIndex].imageId)
     }
 
+    /**
+     * Scaffold provee la estructura básica de la app:
+     * topBar para la barra superior y content para la pantalla principal
+     */
     Scaffold(
         topBar = {
-            val intentContext = LocalContext.current
-            val layoutDirection = LocalLayoutDirection.current
+            val intentContext = LocalContext.current // Contexto de la actividad para el intent
+            val layoutDirection = LocalLayoutDirection.current // Dirección de layout (LTR/RTL)
             DessertClickerAppBar(
                 onShareButtonClicked = {
+                    // Cuando se presiona el botón de compartir
                     shareSoldDessertsInformation(
                         intentContext = intentContext,
                         dessertsSold = dessertsSold,
@@ -214,17 +239,18 @@ private fun DessertClickerApp(
             )
         }
     ) { contentPadding ->
+        // Contenido principal: pantalla de juego
         DessertClickerScreen(
             revenue = revenue,
             dessertsSold = dessertsSold,
             dessertImageId = currentDessertImageId,
             onDessertClicked = {
 
-                // Update the revenue
-                revenue += currentDessertPrice
-                dessertsSold++
+                // Cada vez que el usuario hace clic en un postre:
+                revenue += currentDessertPrice // actualizamos ingresos
+                dessertsSold++ // incrementamos postres vendidos
 
-                // Show the next dessert
+                // Determinamos si se debe mostrar un postre más caro
                 val dessertToShow = determineDessertToShow(desserts, dessertsSold)
                 currentDessertImageId = dessertToShow.imageId
                 currentDessertPrice = dessertToShow.price
@@ -235,6 +261,9 @@ private fun DessertClickerApp(
 }
 
 @Composable
+/**
+ * Barra superior de la app con el título y el botón de compartir.
+ */
 private fun DessertClickerAppBar(
     onShareButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
@@ -264,6 +293,9 @@ private fun DessertClickerAppBar(
 }
 
 @Composable
+ /**
+ * Pantalla principal con imagen de fondo y postre clickeable.
+ */
 fun DessertClickerScreen(
     revenue: Int,
     dessertsSold: Int,
@@ -272,6 +304,7 @@ fun DessertClickerScreen(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
+        // Imagen de fondo
         Image(
             painter = painterResource(R.drawable.bakery_back),
             contentDescription = null,
@@ -280,9 +313,10 @@ fun DessertClickerScreen(
         Column {
             Box(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f) // Ocupa el espacio restante
                     .fillMaxWidth(),
             ) {
+                // Imagen del postre clickeable
                 Image(
                     painter = painterResource(dessertImageId),
                     contentDescription = null,
@@ -290,10 +324,11 @@ fun DessertClickerScreen(
                         .width(dimensionResource(R.dimen.image_size))
                         .height(dimensionResource(R.dimen.image_size))
                         .align(Alignment.Center)
-                        .clickable { onDessertClicked() },
+                        .clickable { onDessertClicked() }, // Detecta clics
                     contentScale = ContentScale.Crop,
                 )
             }
+            // Información de transacciones debajo del postre
             TransactionInfo(
                 revenue = revenue,
                 dessertsSold = dessertsSold,
@@ -304,6 +339,9 @@ fun DessertClickerScreen(
 }
 
 @Composable
+/**
+ * Composable que Muestra la información de ventas y de ingresos.
+ */
 private fun TransactionInfo(
     revenue: Int,
     dessertsSold: Int,
@@ -326,6 +364,9 @@ private fun TransactionInfo(
 }
 
 @Composable
+/**
+ * Muestra los ingresos totales de manera destacada
+ */
 private fun RevenueInfo(revenue: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
@@ -346,6 +387,9 @@ private fun RevenueInfo(revenue: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
+/**
+ * Muestra la cantidad de postres vendidos
+ */
 private fun DessertsSoldInfo(dessertsSold: Int, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier,
@@ -366,6 +410,9 @@ private fun DessertsSoldInfo(dessertsSold: Int, modifier: Modifier = Modifier) {
 
 @Preview
 @Composable
+/**
+  * Preview de la app en Compose
+*/
 fun MyDessertClickerAppPreview() {
     DessertClickerTheme {
         DessertClickerApp(listOf(Dessert(R.drawable.cupcake, 5, 0)))
