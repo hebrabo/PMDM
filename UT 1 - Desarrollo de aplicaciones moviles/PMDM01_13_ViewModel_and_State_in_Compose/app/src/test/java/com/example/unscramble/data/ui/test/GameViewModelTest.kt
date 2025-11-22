@@ -115,7 +115,6 @@ class GameViewModelTest {
        - Comprueba que el contador de palabras se actualiza correctamente en cada turno.
        - Confirma que, al finalizar todas las palabras, el juego se marque como terminado (isGameOver = true).
     */
-
     fun gameViewModel_AllWordsGuessed_UiStateUpdatedCorrectly() {
         // Inicializa la puntuación esperada en 0
         var expectedScore = 0
@@ -147,6 +146,36 @@ class GameViewModelTest {
         assertEquals(MAX_NO_OF_WORDS, currentGameUiState.currentWordCount)
         // Verifica que el juego haya finalizado después de responder todas las palabras
         assertTrue(currentGameUiState.isGameOver)
+    }
+
+    @Test
+    /* Test unitario de JUnit (Ruta de éxito / funcionalidad de omisión) que verifica el comportamiento del GameViewModel cuando el usuario omite una palabra.
+        - Simula que el usuario adivina correctamente una palabra y luego omite la siguiente.
+        - Comprueba que la puntuación no cambia al omitir una palabra.
+        - Verifica que el contador de palabras se incremente correctamente al saltar una palabra.
+   */
+    fun gameViewModel_WordSkipped_ScoreUnchangedAndWordCountIncreased() {
+        // Obtiene el estado actual del juego desde el ViewModel
+        var currentGameUiState = viewModel.uiState.value
+        // Obtiene la palabra correcta correspondiente a la palabra mezclada actual
+        val correctPlayerWord = getUnscrambledWord(currentGameUiState.currentScrambledWord)
+        // Actualiza el intento del usuario con la palabra correcta
+        viewModel.updateUserGuess(correctPlayerWord)
+        // Verifica la palabra ingresada por el usuario y actualiza el estado del juego
+        viewModel.checkUserGuess()
+
+        // Obtiene el estado actualizado del juego después de adivinar la palabra correctamente
+        currentGameUiState = viewModel.uiState.value
+        // Guarda el contador de palabras actual antes de omitir una palabra
+        val lastWordCount = currentGameUiState.currentWordCount
+        // Omite la siguiente palabra del juego
+        viewModel.skipWord()
+        // Obtiene el estado actualizado del juego después de omitir la palabra
+        currentGameUiState = viewModel.uiState.value
+        // Verifica que la puntuación se mantenga igual tras omitir la palabra
+        assertEquals(SCORE_AFTER_FIRST_CORRECT_ANSWER, currentGameUiState.score)
+        // Verifica que el contador de palabras se haya incrementado en 1 tras omitir la palabra
+        assertEquals(lastWordCount + 1, currentGameUiState.currentWordCount)
     }
 
     companion object {
