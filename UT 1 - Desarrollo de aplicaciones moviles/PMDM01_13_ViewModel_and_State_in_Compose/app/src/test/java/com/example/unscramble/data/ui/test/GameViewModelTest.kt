@@ -7,6 +7,7 @@ import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertNotEquals
 
 class GameViewModelTest {
     // Creamos una instancia real del ViewModel.
@@ -45,7 +46,6 @@ class GameViewModelTest {
 
         // Esta verificación usa una constante para dejar claro el valor esperado semánticamente.
         assertEquals(SCORE_AFTER_FIRST_CORRECT_ANSWER, currentGameUiState.score)
-
     }
 
     @Test
@@ -75,7 +75,36 @@ class GameViewModelTest {
         // Verifica que el ViewModel haya marcado correctamente
         // que el intento del usuario fue incorrecto.
         assertTrue(currentGameUiState.isGuessedWordWrong)
+    }
 
+    @Test
+    /* Test unitario de JUnit (Caso límite / inicialización) que verifica que el GameViewModel del juego Unscramble se inicializa correctamente.
+       - Comprueba que al iniciar el juego se carga una palabra desordenada.
+       - Verifica que la palabra actual no coincide con la palabra correcta (está mezclada).
+       - Confirma que el contador de palabras se inicia en 1.
+       - Verifica que la puntuación inicial sea 0.
+       - Comprueba que no haya errores en la suposición inicial del usuario.
+       - Confirma que el juego no esté marcado como finalizado al inicio.
+        */
+    fun gameViewModel_Initialization_FirstWordLoaded() {
+        // Obtiene el estado actual del juego desde el ViewModel.
+        val gameUiState = viewModel.uiState.value
+
+        // Obtiene la palabra correcta a partir de la palabra desordenada actual.
+        // Esta función “desordena” la palabra mezclada para conocer cuál es la respuesta correcta
+        // que el usuario debería adivinar.
+        val unScrambledWord = getUnscrambledWord(gameUiState.currentScrambledWord)
+
+        // Verifica que la palabra actual esté mezclada y no sea igual a la palabra correcta
+        assertNotEquals(unScrambledWord, gameUiState.currentScrambledWord)
+        // Verifica que el contador de palabras comience en 1 al iniciar el juego
+        assertTrue(gameUiState.currentWordCount == 1)
+        // Verifica que la puntuación inicial sea 0
+        assertTrue(gameUiState.score == 0)
+        // Verifica que inicialmente no haya error en la suposición del usuario
+        assertFalse(gameUiState.isGuessedWordWrong)
+        // Verifica que el juego no esté terminado al iniciar
+        assertFalse(gameUiState.isGameOver)
     }
 
     companion object {
