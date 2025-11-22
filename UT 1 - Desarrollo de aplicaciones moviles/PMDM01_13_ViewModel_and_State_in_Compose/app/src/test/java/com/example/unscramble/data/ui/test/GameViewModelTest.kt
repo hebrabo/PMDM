@@ -8,6 +8,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.assertNotEquals
+import com.example.unscramble.data.MAX_NO_OF_WORDS
 
 class GameViewModelTest {
     // Creamos una instancia real del ViewModel.
@@ -85,7 +86,7 @@ class GameViewModelTest {
        - Verifica que la puntuación inicial sea 0.
        - Comprueba que no haya errores en la suposición inicial del usuario.
        - Confirma que el juego no esté marcado como finalizado al inicio.
-        */
+    */
     fun gameViewModel_Initialization_FirstWordLoaded() {
         // Obtiene el estado actual del juego desde el ViewModel.
         val gameUiState = viewModel.uiState.value
@@ -105,6 +106,47 @@ class GameViewModelTest {
         assertFalse(gameUiState.isGuessedWordWrong)
         // Verifica que el juego no esté terminado al iniciar
         assertFalse(gameUiState.isGameOver)
+    }
+
+    @Test
+    /* Test unitario de JUnit (Ruta de éxito / flujo completo) que verifica que el GameViewModel del juego Unscramble actualiza correctamente el estado de la UI al adivinar todas las palabras.
+       - Simula que el usuario acierta todas las palabras hasta el límite máximo del juego.
+       - Incrementa y verifica la puntuación tras cada respuesta correcta.
+       - Comprueba que el contador de palabras se actualiza correctamente en cada turno.
+       - Confirma que, al finalizar todas las palabras, el juego se marque como terminado (isGameOver = true).
+    */
+
+    fun gameViewModel_AllWordsGuessed_UiStateUpdatedCorrectly() {
+        // Inicializa la puntuación esperada en 0
+        var expectedScore = 0
+
+        // Obtiene el estado actual del juego desde el ViewModel
+        var currentGameUiState = viewModel.uiState.value
+
+        // Obtiene la palabra correcta correspondiente a la palabra mezclada actual
+        var correctPlayerWord = getUnscrambledWord(currentGameUiState.currentScrambledWord)
+
+        // Repite el proceso para el número máximo de palabras del juego
+        repeat(MAX_NO_OF_WORDS) {
+            // Incrementa la puntuación esperada en la cantidad definida por SCORE_INCREASE
+            expectedScore += SCORE_INCREASE
+
+            // Actualiza el intento del usuario en el ViewModel con la palabra correcta
+            viewModel.updateUserGuess(correctPlayerWord)
+            // Valida la palabra ingresada por el usuario y actualiza el estado del juego
+            viewModel.checkUserGuess()
+
+            // Obtiene el estado actualizado del juego
+            currentGameUiState = viewModel.uiState.value
+            // Obtiene la siguiente palabra correcta para la siguiente iteración
+            correctPlayerWord = getUnscrambledWord(currentGameUiState.currentScrambledWord)
+            // Verifica que, después de cada respuesta correcta, la puntuación se actualice correctamente
+            assertEquals(expectedScore, currentGameUiState.score)
+        }
+        // Verifica que, al final de todas las palabras, el contador de palabras sea correcto
+        assertEquals(MAX_NO_OF_WORDS, currentGameUiState.currentWordCount)
+        // Verifica que el juego haya finalizado después de responder todas las palabras
+        assertTrue(currentGameUiState.isGameOver)
     }
 
     companion object {
