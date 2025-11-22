@@ -63,7 +63,7 @@ class GameViewModel : ViewModel() {
     }
 
     // Reinicia toda la lógica interna del ViewModel para comenzar una nueva partida.
-// Limpia la lista de palabras ya usadas y reinicia el estado del juego con una nueva palabra mezclada.
+    // Limpia la lista de palabras ya usadas y reinicia el estado del juego con una nueva palabra mezclada.
     fun resetGame() {
         usedWords.clear() // Limpia historial para permitir nuevas rondas desde cero
         // Restablece todo el estado del juego, incluida la nueva palabra desordenada inicial.
