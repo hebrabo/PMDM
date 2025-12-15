@@ -55,25 +55,17 @@ fun RaceTrackerApp() {
 
 // Comprobamos la variable de estado. Si es 'true', entramos al bloque.
     if (raceInProgress) {
-        /**
-         * LaunchedEffect:
-         * Es un "puente" entre Compose (UI) y las Corrutinas.
-         * Se ejecuta cuando 'raceInProgress' pasa a true.
-         *
-         * Los parámetros (playerOne, playerTwo) son las "keys". Si estos objetos
-         * cambiaran (fueran reemplazados por otros jugadores), la corrutina se cancelaría y reiniciaría.
-         */
         LaunchedEffect(playerOne, playerTwo) {
-            // --- EJECUCIÓN SECUENCIAL (UNO DETRÁS DE OTRO) ---
+            // coroutineScope crea un ámbito para lanzar múltiples tareas hijas
+            coroutineScope {
+                // 'launch' dispara la tarea y CONTINÚA INMEDIATAMENTE a la siguiente línea
+                // sin esperar a que termine.
+                launch { playerOne.run() } // Arranca el hilo del Jugador 1
+                launch { playerTwo.run() } // Arranca el hilo del Jugador 2 INMEDIATAMENTE
+            }
+            // coroutineScope se queda esperando aquí hasta que TODOS sus hijos (launch) terminen.
 
-            // 1. Llamamos a run(). Como es una 'suspend fun', la corrutina
-            // se SUSPENDE (se pausa) en esta línea.
-            // El código NO pasará a la siguiente línea hasta que playerOne termine su bucle while.
-            playerOne.run()
-            // 2. Este código solo se ejecuta cuando playerOne ha terminado (llegado a 100).
-            // Por tanto, ¡esto no es una carrera real! Es una carrera por turnos.
-            playerTwo.run()
-            // 3. Cuando AMBOS han terminado (uno tras otro), cambiamos el estado.
+            // Una vez que ambos han llegado a la meta, se ejecuta esto:
             raceInProgress = false
         }
     }

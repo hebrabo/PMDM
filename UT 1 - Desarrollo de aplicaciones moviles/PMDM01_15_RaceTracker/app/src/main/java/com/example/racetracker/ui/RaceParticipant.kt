@@ -4,10 +4,12 @@
  */
 package com.example.racetracker.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Esta clase representa el ESTADO de un participante.
@@ -40,11 +42,37 @@ class RaceParticipant(
      * Es ideal para operaciones que toman tiempo (como una carrera) sin bloquear la pantalla (hilo principal).
      */
     suspend fun run() {
-        while (currentProgress < maxProgress) {
-            // delay() es una función de suspensión. Pausa la ejecución por X tiempo
-            // pero NO congela la app.
-            delay(progressDelayMillis)
-            currentProgress += progressIncrement
+        try {
+            // Bucle de la "carrera". Se ejecuta mientras no lleguemos a la meta.
+            while (currentProgress < maxProgress) {
+
+                /**
+                 * PUNTO DE SUSPENSIÓN Y CANCELACIÓN COOPERATIVA:
+                 * 'delay' no solo pausa la ejecución, también comprueba si la corrutina
+                 * sigue activa (isActive).
+                 * * Si el usuario pulsa "Reset" o gira la pantalla y la corrutina se cancela,
+                 * la función 'delay' detecta esa cancelación e interrumpe la ejecución
+                 * lanzando inmediatamente una 'CancellationException'.
+                 */
+                delay(progressDelayMillis)
+
+                // Si no se ha cancelado, actualizamos el estado (la barra avanza).
+                currentProgress += progressIncrement
+            }
+        } catch (e: CancellationException) {
+            // Entramos aquí si la corrutina fue cancelada mientras estaba en el 'delay'.
+            Log.e("RaceParticipant", "$name: ${e.message}")
+
+            /**
+             * ¡REGLA DE ORO DE LAS CORRUTINAS!
+             * Siempre debemos volver a lanzar (re-throw) la CancellationException.
+             * * ¿Por qué?
+             * Porque la cancelación es un mecanismo especial de control de flujo.
+             * Si te "comes" la excepción (la capturas y no haces nada), la corrutina padre
+             * (el 'LaunchedEffect' o el 'scope') pensará que la tarea terminó con éxito
+             * en lugar de saber que fue interrumpida.
+             */
+            throw e
         }
     }
 
