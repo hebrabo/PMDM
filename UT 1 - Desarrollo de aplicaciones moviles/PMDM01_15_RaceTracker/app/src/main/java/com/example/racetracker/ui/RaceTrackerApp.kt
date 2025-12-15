@@ -15,32 +15,13 @@
  */
 package com.example.racetracker.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,13 +32,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.racetracker.R
 import com.example.racetracker.ui.theme.RaceTrackerTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun RaceTrackerApp() {
     /**
-     * Note: To survive the configuration changes such as screen rotation, [rememberSaveable] should
-     * be used with custom Saver object. But to keep the example simple, and keep focus on
-     * Coroutines that implementation detail is stripped out.
+     * REMEMBER:
+     * Usamos 'remember' para que los objetos RaceParticipant sobrevivan a la recomposición.
+     * Si no usáramos 'remember', cada vez que la pantalla se dibuje, se crearían nuevos jugadores
+     * y el progreso se perdería.
      */
     val playerOne = remember {
         RaceParticipant(name = "Player 1", progressIncrement = 1)
@@ -65,12 +49,19 @@ fun RaceTrackerApp() {
     val playerTwo = remember {
         RaceParticipant(name = "Player 2", progressIncrement = 2)
     }
+
+    // Estado booleano que controla si la carrera está activa o no.
     var raceInProgress by remember { mutableStateOf(false) }
 
+
+
+    // Pantalla principal
     RaceTrackerScreen(
         playerOne = playerOne,
         playerTwo = playerTwo,
         isRunning = raceInProgress,
+        // STATE HOISTING (Elevación de estado):
+        // Pasamos una función lambda para que el hijo pueda pedirle al padre que cambie el estado.
         onRunStateChange = { raceInProgress = it },
         modifier = Modifier
             .statusBarsPadding()
@@ -86,7 +77,7 @@ private fun RaceTrackerScreen(
     playerOne: RaceParticipant,
     playerTwo: RaceParticipant,
     isRunning: Boolean,
-    onRunStateChange: (Boolean) -> Unit,
+    onRunStateChange: (Boolean) -> Unit, // Callback para modificar el estado
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -105,11 +96,17 @@ private fun RaceTrackerScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            // Icono decorativo
             Icon(
                 painter = painterResource(R.drawable.ic_walk),
                 contentDescription = null,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium)),
             )
+
+            // Indicador Jugador 1
+            // Observa cómo leemos 'playerOne.currentProgress'. Como es un State,
+            // cuando cambie, esta función se volverá a ejecutar (recomposición)
+            // y la barra se moverá.
             StatusIndicator(
                 participantName = playerOne.name,
                 currentProgress = playerOne.currentProgress,
@@ -120,7 +117,10 @@ private fun RaceTrackerScreen(
                 progressFactor = playerOne.progressFactor,
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+
+            // Indicador Jugador 2
             StatusIndicator(
                 participantName = playerTwo.name,
                 currentProgress = playerTwo.currentProgress,
@@ -131,7 +131,10 @@ private fun RaceTrackerScreen(
                 progressFactor = playerTwo.progressFactor,
                 modifier = Modifier.fillMaxWidth(),
             )
+
             Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+
+            // Botones de control
             RaceControls(
                 isRunning = isRunning,
                 onRunStateChange = onRunStateChange,
@@ -154,9 +157,7 @@ private fun StatusIndicator(
     progressFactor: Float,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-    ) {
+    Row(modifier = modifier) {
         Text(
             text = participantName,
             modifier = Modifier.padding(end = dimensionResource(R.dimen.padding_small))
@@ -164,13 +165,18 @@ private fun StatusIndicator(
         Column(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small))
         ) {
+            // COMPONENTE DE UI: Barra de progreso lineal
             LinearProgressIndicator(
-                progress = progressFactor,
+                progress = { progressFactor }, // Se actualiza automáticamente
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(R.dimen.progress_indicator_height))
-                    .clip(RoundedCornerShape(dimensionResource(R.dimen.progress_indicator_corner_radius)))
+                    .clip(RoundedCornerShape(dimensionResource(R.dimen.progress_indicator_corner_radius))),
+                color = ProgressIndicatorDefaults.linearColor,
+                trackColor = ProgressIndicatorDefaults.linearTrackColor,
+                strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
             )
+            // Fila con los textos de porcentaje (Ej: "45%")
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -201,12 +207,16 @@ private fun RaceControls(
         modifier = modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium))
     ) {
+        // Botón Iniciar / Pausar
         Button(
+            // Al hacer clic, invertimos el valor booleano actual
             onClick = { onRunStateChange(!isRunning) },
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(if (isRunning) stringResource(R.string.pause) else stringResource(R.string.start))
         }
+
+        // Botón Reiniciar
         OutlinedButton(
             onClick = onReset,
             modifier = Modifier.fillMaxWidth(),

@@ -1,26 +1,17 @@
 /*
  * Copyright (C) 2023 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * ... (Licencia omitida para brevedad)
  */
 package com.example.racetracker.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 
 /**
- * This class represents a state holder for race participant.
+ * Esta clase representa el ESTADO de un participante.
+ * No es un Composable, es una clase de Kotlin pura que guarda datos.
  */
 class RaceParticipant(
     val name: String,
@@ -30,19 +21,36 @@ class RaceParticipant(
     private val initialProgress: Int = 0
 ) {
     init {
+        // Validaciones básicas al crear el objeto
         require(maxProgress > 0) { "maxProgress=$maxProgress; must be > 0" }
         require(progressIncrement > 0) { "progressIncrement=$progressIncrement; must be > 0" }
     }
 
     /**
-     * Indicates the race participant's current progress
+     * VARIABLE DE ESTADO:
+     * Usamos 'mutableStateOf' para que Jetpack Compose pueda "observar" esta variable.
+     * Cuando 'currentProgress' cambie, cualquier UI que lea este valor se volverá a dibujar (Recomposición).
      */
     var currentProgress by mutableStateOf(initialProgress)
-        private set
+        private set // El setter es privado para que solo esta clase pueda modificar el progreso.
 
     /**
-     * Regardless of the value of [initialProgress] the reset function will reset the
-     * [currentProgress] to 0
+     * LÓGICA DE CORRUTINA:
+     * La palabra clave 'suspend' indica que esta función puede pausarse y reanudarse.
+     * Es ideal para operaciones que toman tiempo (como una carrera) sin bloquear la pantalla (hilo principal).
+     */
+    suspend fun run() {
+        while (currentProgress < maxProgress) {
+            // delay() es una función de suspensión. Pausa la ejecución por X tiempo
+            // pero NO congela la app.
+            delay(progressDelayMillis)
+            currentProgress += progressIncrement
+        }
+    }
+
+    /**
+     * Resetea el estado a 0. Al modificar 'currentProgress',
+     * la UI se actualizará automáticamente.
      */
     fun reset() {
         currentProgress = 0
@@ -50,8 +58,9 @@ class RaceParticipant(
 }
 
 /**
- * The Linear progress indicator expects progress value in the range of 0-1. This property
- * calculate the progress factor to satisfy the indicator requirements.
+ * PROPIEDAD DE EXTENSIÓN:
+ * La barra de progreso de Material Design espera un valor flotante entre 0.0 y 1.0.
+ * Esta lógica convierte nuestro entero (ej. 50 de 100) a un factor (0.5).
  */
 val RaceParticipant.progressFactor: Float
     get() = currentProgress / maxProgress.toFloat()
