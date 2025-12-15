@@ -31,7 +31,6 @@ class RaceParticipantTest {
         initialProgress = 0,
         progressIncrement = 1
     )
-
     @Test
     fun raceParticipant_RaceStarted_ProgressUpdated() = runTest {
         val expectedProgress = 1
