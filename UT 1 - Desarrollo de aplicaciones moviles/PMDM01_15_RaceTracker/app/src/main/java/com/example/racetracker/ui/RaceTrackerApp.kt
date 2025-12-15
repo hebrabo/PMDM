@@ -53,7 +53,30 @@ fun RaceTrackerApp() {
     // Estado booleano que controla si la carrera está activa o no.
     var raceInProgress by remember { mutableStateOf(false) }
 
+// Comprobamos la variable de estado. Si es 'true', entramos al bloque.
+    if (raceInProgress) {
+        /**
+         * LaunchedEffect:
+         * Es un "puente" entre Compose (UI) y las Corrutinas.
+         * Se ejecuta cuando 'raceInProgress' pasa a true.
+         *
+         * Los parámetros (playerOne, playerTwo) son las "keys". Si estos objetos
+         * cambiaran (fueran reemplazados por otros jugadores), la corrutina se cancelaría y reiniciaría.
+         */
+        LaunchedEffect(playerOne, playerTwo) {
+            // --- EJECUCIÓN SECUENCIAL (UNO DETRÁS DE OTRO) ---
 
+            // 1. Llamamos a run(). Como es una 'suspend fun', la corrutina
+            // se SUSPENDE (se pausa) en esta línea.
+            // El código NO pasará a la siguiente línea hasta que playerOne termine su bucle while.
+            playerOne.run()
+            // 2. Este código solo se ejecuta cuando playerOne ha terminado (llegado a 100).
+            // Por tanto, ¡esto no es una carrera real! Es una carrera por turnos.
+            playerTwo.run()
+            // 3. Cuando AMBOS han terminado (uno tras otro), cambiamos el estado.
+            raceInProgress = false
+        }
+    }
 
     // Pantalla principal
     RaceTrackerScreen(
