@@ -1,3 +1,5 @@
+package `Nivel_Básico`
+
 import kotlinx.coroutines.*
 
 /*
@@ -16,7 +18,7 @@ fun main() = runBlocking {
     println("Pidiendo datos al servidor...")
 
     // 1. LLAMADA: Llamamos a la función suspendida.
-    // Como es secuencial, el programa se PAUSA aquí hasta que 'obtenerNombreUsuario' termine.
+    // Como es secuencial, el programa se PAUSA aquí hasta que 'Nivel_Básico.obtenerNombreUsuario' termine.
     // El resultado (el String) se guarda en la variable 'usuario'.
     val usuario = obtenerNombreUsuario()
 

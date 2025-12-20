@@ -1,4 +1,4 @@
-/*
+package `Nivel_Básico`/*
 * Simula un proceso con varias tareas (por ejemplo: login → cargar perfil → cargar preferencias).
 * Qué practicar:
 * - runBlocking

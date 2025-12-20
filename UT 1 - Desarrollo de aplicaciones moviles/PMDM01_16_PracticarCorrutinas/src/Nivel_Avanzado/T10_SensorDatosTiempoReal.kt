@@ -2,7 +2,6 @@ package ejercicio10
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlin.random.Random
 
 /*
 Ejercicio 10: Sensor de datos en tiempo real (Ejemplo: Dron con mando a distancia)
@@ -62,7 +61,7 @@ fun main() = runBlocking {
 fun telemetriaDron(): Flow<String> = flow {
 
     // [REACCIÓN]
-    // Este código empieza a correr SOLO cuando el mando (main) llama a 'collect'.
+    // Este código empieza a correr SOLO cuando el mando (Nivel_Básico.Nivel_Intermedio.Nivel_IntermedioAvanzado.main) llama a 'collect'.
     println("   [DRON] Recibida orden de despegue. Motores al 100%...")
     delay(500) // Tiempo físico de despegue
 

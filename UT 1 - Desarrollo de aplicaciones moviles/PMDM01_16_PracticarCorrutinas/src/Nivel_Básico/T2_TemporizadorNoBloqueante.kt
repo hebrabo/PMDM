@@ -1,3 +1,5 @@
+package `Nivel_Básico`
+
 import kotlinx.coroutines.*
 
 /*
@@ -8,7 +10,7 @@ Qué practicar:
 - cancelación básica (control del ciclo de vida)
  */
 
-// runBlocking: Habilita el uso de corrutinas (launch, delay) dentro del main
+// runBlocking: Habilita el uso de corrutinas (launch, delay) dentro del Nivel_Básico.Nivel_Intermedio.Nivel_IntermedioAvanzado.main
 // y obliga al programa a ESPERAR a que todas terminen antes de cerrarse.
 fun main() = runBlocking {
     println("--- Programa iniciado ---")

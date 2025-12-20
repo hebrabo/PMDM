@@ -1,3 +1,5 @@
+package Nivel_Intermedio
+
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 
@@ -28,7 +30,7 @@ fun main() {
                 getTemperatura()
             }
 
-            // En este punto, 'getTemperatura' ya está corriendo.
+            // En este punto, 'Nivel_Intermedio.getTemperatura' ya está corriendo.
             // No esperamos a que termine; lanzamos inmediatamente la siguiente.
             val humedad: Deferred<String> = async {
                 getHumedad()

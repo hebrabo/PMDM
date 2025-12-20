@@ -1,3 +1,5 @@
+package Nivel_Intermedio
+
 import kotlinx.coroutines.*
 
 /*
@@ -33,7 +35,7 @@ fun main() = runBlocking {
 suspend fun enviarNotificaciones() = coroutineScope {
     println("Servicio de notificaciones activado")
 
-    // 'isActive' está conectado directamente al 'servicioJob' del main.
+    // 'isActive' está conectado directamente al 'servicioJob' del Nivel_Básico.Nivel_Intermedio.Nivel_IntermedioAvanzado.main.
     // Si se llama a .cancel(), esta variable cambia automáticamente a 'false'
     // y el bucle se rompe.
     while (isActive) {
