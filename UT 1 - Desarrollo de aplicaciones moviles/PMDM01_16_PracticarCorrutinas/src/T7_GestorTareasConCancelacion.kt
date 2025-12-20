@@ -22,6 +22,12 @@ fun main() = runBlocking {
 
             // Simulamos 5 pasos de trabajo pesados
             for (i in 1..5) {
+                // Comprobamos MANUALMENTE si nos han cancelado antes de trabajar.
+                // Esto es útil si el código siguiente consume mucha CPU.
+                if (!isActive) {
+                    println("¡Cancelación detectada por isActive! Abortando bucle...")
+                    break // Rompemos el bucle manualmente
+                }
                 println("   ... Procesando parte $i/5")
                 // delay comprueba si el Job sigue activo.
                 // Si llamamos a cancel(), delay lanza una 'CancellationException' AQUÍ MISMO.
