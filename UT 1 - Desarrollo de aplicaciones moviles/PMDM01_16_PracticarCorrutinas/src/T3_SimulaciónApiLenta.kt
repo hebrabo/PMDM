@@ -34,5 +34,5 @@ suspend fun obtenerNombreUsuario(): String {
     delay(2000)
 
     // Devolvemos el dato ficticio
-    return "Helena Brau"
+    return "Helena"
 }
