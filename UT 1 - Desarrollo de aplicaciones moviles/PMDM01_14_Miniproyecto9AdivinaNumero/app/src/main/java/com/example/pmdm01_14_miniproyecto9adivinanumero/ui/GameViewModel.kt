@@ -109,7 +109,7 @@ class GameViewModel : ViewModel() {
     }
 
     /**
-     * Resetea el juego a su estado inicial.
+     * Función que resetea el juego a su estado inicial.
      * Genera un nuevo número aleatorio y limpia los contadores.
      * _uiState.value = ... significa: "Toma este estado nuevo,
      * guárdalo en la caja (caja UIstate del diagrama) y

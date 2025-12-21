@@ -10,36 +10,36 @@ package com.example.pmdm01_14_miniproyecto9adivinanumero
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.pmdm01_14_miniproyecto9adivinanumero.ui.GuessNumberScreen
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import com.example.pmdm01_14_miniproyecto9adivinanumero.ui.GameScreen
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
+            // Envolvemos la app en el Tema de diseño
             MaterialTheme {
-                GuessNumberScreen()
+                // Surface es el lienzo base estándar de Material Design
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    // ------------------------------------------------------------------
+                    // PUNTO DE ENTRADA ÚNICO
+                    // ------------------------------------------------------------------
+                    // Ya no instanciamos el ViewModel aquí, ni observamos el estado.
+                    // Hemos delegado esa responsabilidad a 'GameScreen' para que
+                    // la Activity quede totalmente limpia y desacoplada.
+                    //
+                    // Simplemente "pintamos" la pantalla del juego.
+                    // ------------------------------------------------------------------
+                    GameScreen()
+                }
             }
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GuessNumberTheme {
-        GuessNumberScreen()
-
-    }
-}
-
-@Composable
-fun GuessNumberTheme(content: @Composable () -> Unit) {
-    TODO("Not yet implemented")
 }
