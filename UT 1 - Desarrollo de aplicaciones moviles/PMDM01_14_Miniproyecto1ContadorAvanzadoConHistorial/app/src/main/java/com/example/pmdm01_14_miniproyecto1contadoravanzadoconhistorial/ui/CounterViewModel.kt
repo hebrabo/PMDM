@@ -61,9 +61,14 @@ class CounterViewModel : ViewModel() {
     }
 
     fun reiniciarContador() {
-        _uiState.value = CounterUiState(
-            contador = 0,
-            historial = emptyList()
-        )
+        _uiState.update { currentState ->
+            // En vez de borrar (emptyList), añadimos un aviso de reinicio al historial existente
+            val nuevoHistorial = listOf("--- Reiniciado a 0 ---") + currentState.historial
+
+            currentState.copy(
+                contador = 0,
+                historial = nuevoHistorial
+            )
+        }
     }
 }
