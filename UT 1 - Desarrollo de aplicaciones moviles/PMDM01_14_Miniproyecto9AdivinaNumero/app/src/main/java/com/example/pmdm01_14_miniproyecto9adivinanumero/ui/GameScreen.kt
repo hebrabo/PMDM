@@ -22,10 +22,10 @@ import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pmdm01_14_miniproyecto9adivinanumero.viewmodel.GuessNumberViewModel
+import com.example.pmdm01_14_miniproyecto9adivinanumero.ui.GameViewModel
 
 @Composable
-fun GuessNumberScreen(vm: GuessNumberViewModel = viewModel()) {
+fun GuessNumberScreen(vm: GameViewModel = viewModel()) {
 
     // Estado local para almacenar la entrada del usuario
     var userInput by remember { mutableStateOf("") }

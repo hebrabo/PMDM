@@ -1,17 +1,17 @@
 package com.example.pmdm01_14_miniproyyecto9adivinanumero
 
-import com.example.pmdm01_14_miniproyecto9adivinanumero.viewmodel.GuessNumberViewModel
+import com.example.pmdm01_14_miniproyecto9adivinanumero.ui.GameViewModel
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
 class GuessNumberViewModelTest {
 
-    private lateinit var viewModel: GuessNumberViewModel
+    private lateinit var viewModel: GameViewModel
 
     @Before
     fun setup() {
-        viewModel = GuessNumberViewModel()
+        viewModel = GameViewModel()
     }
 
     @Test

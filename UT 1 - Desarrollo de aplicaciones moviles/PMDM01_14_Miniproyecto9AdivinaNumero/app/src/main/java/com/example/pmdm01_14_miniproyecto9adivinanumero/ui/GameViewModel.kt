@@ -1,13 +1,13 @@
-package com.example.pmdm01_14_miniproyecto9adivinanumero.viewmodel
+package com.example.pmdm01_14_miniproyecto9adivinanumero.ui
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlin.random.Random
 
-class GuessNumberViewModel : ViewModel() {
+class GameViewModel : ViewModel() {
 
     // Número secreto entre 1 y 100 (estado observable para Compose)
-    var secretNumber = mutableStateOf(Random.nextInt(1, 101))
+    var secretNumber = mutableStateOf(Random.Default.nextInt(1, 101))
         private set
 
     // Mensaje que muestra la pista o acierto
@@ -25,7 +25,7 @@ class GuessNumberViewModel : ViewModel() {
 
     // Reinicia el juego generando un nuevo número y borrando el mensaje
     fun resetGame() {
-        secretNumber.value = Random.nextInt(1, 101)
+        secretNumber.value = Random.Default.nextInt(1, 101)
         message.value = ""
     }
 }
