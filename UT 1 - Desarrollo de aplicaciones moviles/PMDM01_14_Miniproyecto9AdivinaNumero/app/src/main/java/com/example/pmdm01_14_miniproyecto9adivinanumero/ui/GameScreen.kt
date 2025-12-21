@@ -241,43 +241,21 @@ fun GameLayout(
         }
     }
 // -------------------------------------------------------------------------
-// 3. UTILIDADES (EXTENSIONS)
+// 3. FinalScoreDialog (DIALOG)
 // -------------------------------------------------------------------------
-/**
- * IMPORTANTE: Solución al problema de ContextWrapper.
- *
- * En Compose, `LocalContext.current` no siempre devuelve directamente la `Activity`.
- * A menudo devuelve un `ContextWrapper` (por temas, Hilt, o librerías internas).
- * Si intentamos hacer un cast directo `as Activity`, la app crasheará.
- *
- * Esta función recursiva "desenvuelve" (unwrap) el contexto capa por capa
- * hasta encontrar la Activity real para poder llamar a `.finish()`.
- */
-fun Context.findActivity(): Activity? = when (this) {
-    is Activity -> this                     // ¿Eres la Activity? ¡Genial!
-    is ContextWrapper -> baseContext.findActivity() // ¿Eres un envoltorio? Quítate y mira qué hay dentro.
-    else -> null                            // No encontré nada.
-}
-
-// -------------------------------------------------------------------------
-// 4. FinalScoreDialog (DIALOG)
-// -------------------------------------------------------------------------
-/**
- * Ventana emergente (AlertDialog) que bloquea la interacción hasta que se decida.
- */
 @Composable
 private fun FinalScoreDialog(
-    intentos: Int, // El número para mostrar ("Ganaste en 5 intentos")
-    numeroSecreto: Int, // El número secreto (para mostrar)
-    onPlayAgain: () -> Unit, // La función a ejecutar si quiere jugar de nuevo
+    intentos: Int,
+    numeroSecreto: Int,
+    onPlayAgain: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // Obtenemos el contexto actual de la composición
+    // 1. Obtenemos el contexto
     val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = {
-            // Dejamos vacío para impedir que la ventana flotante se cierre si tocamos fuera de la ventana
+            // Vacío para que no se cierre tocando fuera
         },
         title = { Text(text = "¡Felicidades!") },
         text = { Text(text = "Has adivinado el número $numeroSecreto en $intentos intentos.") },
@@ -285,8 +263,9 @@ private fun FinalScoreDialog(
         dismissButton = {
             TextButton(
                 onClick = {
-                    // USO DE LA UTILIDAD: Buscamos la Activity de forma segura y cerramos la App
-                    context.findActivity()?.finish()
+                    // Usamos "as?" (Casteo seguro)
+                    // Intentamos tratar el contexto como Activity. Si funciona, llamamos a finish().
+                    (context as? Activity)?.finish()
                 }
             ) {
                 Text(text = "Salir")
