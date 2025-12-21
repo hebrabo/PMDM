@@ -1,64 +1,129 @@
-package com.example.pmdm01_14_miniproyyecto1contadorhistorial.ui
+package com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterViewModel
 
-
+// -------------------------------------------------------------------------
+// 1. STATEFUL - Conecta ViewModel con la Pantalla
+// -------------------------------------------------------------------------
 @Composable
 fun CounterScreen(viewModel: CounterViewModel = viewModel()) {
+    // 1. Leemos el estado del ViewModel (el número y la lista)
+    val state by viewModel.uiState.collectAsState()
 
-    // Pantalla principal organizada en una columna vertical
+    // 2. Llamamos al diseño (Layout) pasándole los datos y las funciones
+    CounterLayout(
+        contador = state.contador,
+        historial = state.historial,
+        onSumar = { viewModel.sumar() },
+        onRestar = { viewModel.restar() },
+        onReiniciar = { viewModel.reiniciarContador() }
+    )
+}
+
+// -------------------------------------------------------------------------
+// 2. STATELESS - Solo pinta lo que le dicen
+// -------------------------------------------------------------------------
+@Composable
+fun CounterLayout(
+    contador: Int,
+    historial: List<String>,
+    onSumar: () -> Unit,
+    onRestar: () -> Unit,
+    onReiniciar: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.Top
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Mostramos el valor actual del contador
+        // TÍTULO
         Text(
-            text = "Contador: ${viewModel.count.value}",
-            style = MaterialTheme.typography.headlineMedium
+            text = "Contador Avanzado",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        // Fila con los tres botones
-        Row {
-            // Botón para sumar 1
-            Button(onClick = { viewModel.increment() }, modifier = Modifier.weight(1f)) {
-                Text("Sumar")
+        // NÚMERO GRANDE
+        Text(
+            text = "$contador",
+            fontSize = 90.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // BOTONERA
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Botón Restar
+            Button(onClick = onRestar) {
+                Text("-1", fontSize = 20.sp)
             }
-            Spacer(Modifier.width(8.dp))
-            // Botón para restar 1
-            Button(onClick = { viewModel.decrement() }, modifier = Modifier.weight(1f)) {
-                Text("Restar")
-            }
-            Spacer(Modifier.width(8.dp))
-            // Botón para reiniciar a 0
+
+            // Botón Reset (Rojo)
             Button(
-                onClick = { viewModel.reset() },
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                onClick = onReiniciar,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Text("Reiniciar")
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = "Reiniciar")
+            }
+
+            // Botón Sumar
+            Button(onClick = onSumar) {
+                Text("+1", fontSize = 20.sp)
             }
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))
+        Divider()
+        Spacer(modifier = Modifier.height(8.dp))
 
-        Text(
-            // Título del historial
-            "Historial:",
-            style = MaterialTheme.typography.titleMedium
-        )
+        Text("Historial de operaciones", style = MaterialTheme.typography.labelLarge)
 
-        // Lista del historial
-        HistoryList(history = viewModel.history)
+        // LISTA DE HISTORIAL
+        // Usamos LazyColumn para que sea eficiente si la lista es muy larga
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f) // Ocupa todo el espacio restante hacia abajo
+                .padding(top = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(historial) { item ->
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Text(
+                        text = item,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        }
     }
 }

@@ -1,25 +1,36 @@
 package com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial
 
-/*
-* Contador avanzado con historial
-* Crea una app con un contador que permita sumar, restar y reiniciar.
-* Debe mostrar un historial de operaciones. El ViewModel gestionará el estado y el historial.
- */
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.example.pmdm01_14_miniproyyecto1contadorhistorial.ui.CounterScreen
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.theme.PMDM01_14_Miniproyecto1ContadorAvanzadoConHistorialTheme
+import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // // Permite que la interfaz ocupe toda la pantalla
-        setContent { // // setContent inicia Jetpack Compose
-            PMDM01_14_Miniproyecto1ContadorAvanzadoConHistorialTheme { //  // Aplicamos el tema a toda la app
-                CounterScreen() // // Llamamos a la pantalla principal de la app
+        enableEdgeToEdge() // Habilita el modo pantalla completa
+
+        setContent {
+            PMDM01_14_Miniproyecto1ContadorAvanzadoConHistorialTheme {
+                // 1. SURFACE: Pone el color de fondo (blanco/negro) correcto
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    // 2. COUNTER SCREEN con padding seguro
+                    // Usamos safeDrawingPadding() para que el contenido no se tape con la barra de estado (la hora/batería)
+                    // ya que enableEdgeToEdge() está activado.
+                    Surface(modifier = Modifier.safeDrawingPadding()) {
+                        CounterScreen()
+                    }
+                }
             }
         }
     }
