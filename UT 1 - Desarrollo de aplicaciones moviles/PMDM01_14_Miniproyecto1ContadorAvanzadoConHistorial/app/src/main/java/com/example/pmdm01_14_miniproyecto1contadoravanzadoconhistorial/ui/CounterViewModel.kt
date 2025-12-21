@@ -1,36 +1,69 @@
 package com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterUiState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class CounterViewModel : ViewModel() {
 
-    // Estado observable del contador
-    // Compose actualiza la pantalla automáticamente si cambia este valor
-    var count = mutableStateOf(0)
-        private set
+    // ------------------------------------------------------------------------
+    // ESTADO
+    // ------------------------------------------------------------------------
+    private val _uiState = MutableStateFlow(CounterUiState())
+    val uiState: StateFlow<CounterUiState> = _uiState.asStateFlow()
 
-    // Lista observable donde guardamos el historial de operaciones
-    var history = mutableStateListOf<CounterUiState>()
-        private set
-
-    // Función para sumar 1
-    fun increment() {
-        count.value++
-        history.add(CounterUiState("Sumar 1", count.value))
+    init {
+        reiniciarContador()
     }
 
-    // Función para restar 1
-    fun decrement() {
-        count.value--
-        history.add(CounterUiState("Restar 1", count.value))
+    // ------------------------------------------------------------------------
+    // FUNCIONES
+    // ------------------------------------------------------------------------
+
+    fun sumar() {
+        _uiState.update { currentState ->
+
+            // 1. CÁLCULOS PREVIOS (Variables temporales)
+            // Calculamos aquí el valor limpio antes de meterlo en el estado
+            val valorCalculado = currentState.contador + 1
+
+            // Usamos el valor que acabamos de calcular para crear el mensaje
+            val historialCalculado = listOf("Sumando (+1) -> $valorCalculado") + currentState.historial
+
+            // 2. ACTUALIZACIÓN DEL ESTADO
+            // Ahora asignamos las variables ya calculadas
+            currentState.copy(
+                contador = valorCalculado,
+                historial = historialCalculado
+            )
+        }
     }
 
-    // Función para reiniciar el contador a cero
-    fun reset() {
-        count.value = 0
-        history.add(CounterUiState("Reiniciar contador", 0))
+    fun restar() {
+        _uiState.update { currentState ->
+
+            // 1. CÁLCULOS PREVIOS (Variables temporales)
+            // Calculamos aquí el valor limpio antes de meterlo en el estado
+            val valorCalculado = currentState.contador - 1
+
+            // Usamos el valor que acabamos de calcular para crear el mensaje
+            val historialCalculado = listOf("Restando (-1) -> $valorCalculado") + currentState.historial
+
+            // 2. ACTUALIZACIÓN DEL ESTADO
+            // Ahora asignamos las variables ya calculadas
+            currentState.copy(
+                contador = valorCalculado,
+                historial = historialCalculado
+            )
+        }
+    }
+
+    fun reiniciarContador() {
+        _uiState.value = CounterUiState(
+            contador = 0,
+            historial = emptyList()
+        )
     }
 }
