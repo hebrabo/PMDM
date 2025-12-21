@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pmdm01_14_miniproyecto1contadorhistorial.viewmodel.CounterViewModel
+import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterViewModel
 
 
 @Composable

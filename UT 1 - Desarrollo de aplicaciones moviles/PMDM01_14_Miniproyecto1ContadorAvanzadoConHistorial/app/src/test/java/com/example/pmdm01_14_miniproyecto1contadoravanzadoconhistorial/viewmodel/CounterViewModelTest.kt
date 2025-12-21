@@ -1,5 +1,6 @@
 package com.example.pmdm01_14_miniproyecto1contadorhistorial.viewmodel
 
+import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

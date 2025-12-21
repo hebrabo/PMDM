@@ -7,11 +7,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.pmdm01_14_miniproyecto1contadorhistorial.model.Operation
+import com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial.ui.CounterUiState
 
 
 @Composable
-fun HistoryList(history: List<Operation>) {
+fun HistoryList(history: List<CounterUiState>) {
     // LazyColumn permite listas largas con scroll eficiente
     LazyColumn(
         contentPadding = PaddingValues(top = 8.dp)

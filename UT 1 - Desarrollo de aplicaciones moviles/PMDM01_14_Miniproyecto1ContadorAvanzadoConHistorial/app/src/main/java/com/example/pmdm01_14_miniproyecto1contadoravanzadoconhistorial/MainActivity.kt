@@ -1,4 +1,4 @@
-package com.example.pmdm01_14_miniproyyecto1contadorhistorial
+package com.example.pmdm01_14_miniproyecto1contadoravanzadoconhistorial
 
 /*
 * Contador avanzado con historial
