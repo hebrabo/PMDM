@@ -5,7 +5,8 @@
     "categoria": "contar",
     "etiqueta": "cuantificadores",
     "descripcion": "Selecciona la mesa donde hay muchos o pocos objetos de la clase",
-    "imagenUrl": "https://i.pinimg.com/736x/30/55/af/3055afc68a5dffc808b27ff814e5896d.jpg"
+    "imagenUrl": "https://i.pinimg.com/736x/30/55/af/3055afc68a5dffc808b27ff814e5896d.jpg",
+    "juegoUrl": "https://www.penyagolosaeduca.com/cuantificadores-en-la-clase/"
   },
   {
     "id": 2,
@@ -13,7 +14,8 @@
     "categoria": "numeracion",
     "etiqueta": "dobles",
     "descripcion": "Coloca en el segundo plato el doble de palillos que en el primero.",
-    "imagenUrl": "https://i.pinimg.com/564x/5e/61/11/5e61114d9cc2148fc8c63ce38337f4ae.jpg"
+    "imagenUrl": "https://i.pinimg.com/564x/5e/61/11/5e61114d9cc2148fc8c63ce38337f4ae.jpg",
+    "juegoUrl": "https://www.penyagolosaeduca.com/el-doble-de-palillos-1-50/"
   },
   {
     "id": 3,
@@ -21,6 +23,7 @@
     "categoria": "operaciones",
     "etiqueta": "sumar",
     "descripcion": "Suma las abejas que hay entre las dos colmenas",
-    "imagenUrl": "https://i.pinimg.com/736x/46/53/30/4653303e18b5c13bef4e3b288e0ae266.jpg"
+    "imagenUrl": "https://i.pinimg.com/736x/46/53/30/4653303e18b5c13bef4e3b288e0ae266.jpg",
+    "juegoUrl": "https://www.penyagolosaeduca.com/cuantas-abejas-hay-en-las-dos-colmenas1-10/"
   }
 ]

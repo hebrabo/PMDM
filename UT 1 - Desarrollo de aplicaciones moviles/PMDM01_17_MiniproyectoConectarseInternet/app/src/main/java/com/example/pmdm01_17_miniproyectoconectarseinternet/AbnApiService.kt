@@ -4,15 +4,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 
-// 1. Interfaz: He creado este ID específico para tu app de ABN
+// 1. La Interfaz: Solo pedimos el nombre del archivo
 interface AbnApiService {
-    @GET("37603f90-8805-4f40-8488-842245b59a85")
+    @GET("juegos_abn.json")
     suspend fun getJuegos(): List<JuegoAbn>
 }
 
-// 2. Cliente Retrofit: Conectamos con el servidor de Mocky
+// 2. El Objeto Retrofit: Aquí va la ruta de la carpeta en GitHub
 object RetrofitInstance {
-    private const val BASE_URL = "https://run.mocky.io/v3/"
+    // IMPORTANTE: La URL base debe terminar en /
+    private const val BASE_URL = "https://raw.githubusercontent.com/hebrabo/PMDM/main/UT%201%20-%20Desarrollo%20de%20aplicaciones%20moviles/PMDM01_17_MiniproyectoConectarseInternet/data/"
 
     val api: AbnApiService by lazy {
         Retrofit.Builder()

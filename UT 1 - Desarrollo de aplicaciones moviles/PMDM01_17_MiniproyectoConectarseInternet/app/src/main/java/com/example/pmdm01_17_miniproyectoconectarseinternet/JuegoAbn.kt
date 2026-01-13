@@ -3,8 +3,9 @@ package com.example.pmdm01_17_miniproyectoconectarseinternet
 data class JuegoAbn(
     val id: Int,
     val titulo: String,
-    val categoria: String, // "contar", "numeracion" o "operaciones"
-    val etiqueta: String,  // "cuantificadores", "patrones", "recta numérica"...
+    val categoria: String,
+    val etiqueta: String,
     val descripcion: String,
-    val imagenUrl: String  // La URL de la imagen que descargaremos con Coil
+    val imagenUrl: String,
+    val juegoUrl: String? = "" // Usamos ? y = "" para máxima seguridad
 )
