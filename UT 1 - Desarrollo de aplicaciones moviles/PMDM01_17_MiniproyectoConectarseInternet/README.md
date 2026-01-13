@@ -2,7 +2,7 @@
 
 Este proyecto es una aplicación educativa diseñada para facilitar el aprendizaje del cálculo mediante la metodología **ABN**. La app ofrece acceso a una biblioteca dinámica de juegos interactivos organizados por categorías de conteo, numeración y operaciones.
 
-## 📺 Vídeo de Demostración
+## Vídeo de Demostración
 Puedes ver el funcionamiento de la aplicación, la carga asíncrona de datos y la navegación aquí:
 
 ![Vídeo del Proyecto](funcionamiento_miniproyecto.webm)
