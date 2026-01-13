@@ -7,7 +7,7 @@ Puedes ver el funcionamiento de la aplicación, la carga asíncrona de datos y l
 
 ![Vídeo del Proyecto](funcionamiento_miniproyecto.webm)
 
-*(Si el vídeo no se reproduce directamente, puedes encontrarlo en la raíz del repositorio como `Video.webm`)*
+*(Si el vídeo no se reproduce directamente, puedes encontrarlo en la raíz del repositorio como `funcionamiento_miniproyecto.webm`)*
 
 ---
 
