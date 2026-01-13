@@ -5,7 +5,7 @@ Este proyecto es una aplicación educativa diseñada para facilitar el aprendiza
 ## Vídeo de Demostración
 Puedes ver el funcionamiento de la aplicación, la carga asíncrona de datos y la navegación aquí:
 
-![Vídeo del Proyecto](funcionamiento_miniproyecto.webm)
+[Vídeo del Proyecto](funcionamiento_miniproyecto.webm)
 
 *(Si el vídeo no se reproduce directamente, puedes encontrarlo en la raíz del repositorio como `funcionamiento_miniproyecto.webm`)*
 
