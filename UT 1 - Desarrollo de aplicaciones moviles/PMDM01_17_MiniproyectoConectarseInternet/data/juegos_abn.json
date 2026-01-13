@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "titulo": "Cuantificadores en la clase",
+    "categoria": "contar",
+    "etiqueta": "cuantificadores",
+    "descripcion": "Selecciona la mesa donde hay muchos o pocos objetos de la clase",
+    "imagenUrl": "https://i.pinimg.com/736x/30/55/af/3055afc68a5dffc808b27ff814e5896d.jpg"
+  },
+  {
+    "id": 2,
+    "titulo": "El doble de palillos (1-50)",
+    "categoria": "numeracion",
+    "etiqueta": "dobles",
+    "descripcion": "Coloca en el segundo plato el doble de palillos que en el primero.",
+    "imagenUrl": "https://i.pinimg.com/564x/5e/61/11/5e61114d9cc2148fc8c63ce38337f4ae.jpg"
+  },
+  {
+    "id": 3,
+    "titulo": "¿Cuántas abejas hay entre las dos colmenas?(1-10)",
+    "categoria": "operaciones",
+    "etiqueta": "sumar",
+    "descripcion": "Suma las abejas que hay entre las dos colmenas",
+    "imagenUrl": "https://i.pinimg.com/736x/46/53/30/4653303e18b5c13bef4e3b288e0ae266.jpg"
+  }
+]
