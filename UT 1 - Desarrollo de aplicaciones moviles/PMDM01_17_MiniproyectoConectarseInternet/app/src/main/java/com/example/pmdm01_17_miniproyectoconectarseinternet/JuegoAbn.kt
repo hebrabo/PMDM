@@ -1,10 +1,15 @@
 package com.example.pmdm01_17_miniproyectoconectarseinternet
 
+// REQUISITO: Importar Serializable para que la biblioteca funcione
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
+
 /**
  * DATA CLASS: El Modelo de Datos.
- * Esta clase es el "molde" que usa Retrofit y Gson para convertir el texto JSON
- * que viene de Internet en objetos que Kotlin puede entender.
+ * @Serializable: Esta etiqueta es OBLIGATORIA para usar kotlinx.serialization.
+ * Indica que esta clase puede convertirse desde una cadena JSON a objetos Kotlin.
  */
+@Serializable
 data class JuegoAbn(
     // ID único para identificar cada actividad dentro de los juegos de la app.
     val id: Int,
@@ -16,19 +21,13 @@ data class JuegoAbn(
     val descripcion: String,
 
     /**
-     * Cargar y mostrar imágenes de Internet.
-     * imagenUrl: Contiene la dirección web de la imagen.
-     * Esta URL es procesada por la librería Coil para descargar la imagen
-     * de forma asíncrona sin bloquear el hilo principal.
+     * @SerialName: Mapea la clave exacta del JSON con tu variable.
+     * Es útil si el JSON usa nombres distintos o para asegurar el mapeo correcto.
      */
+    @SerialName(value = "imagenUrl")
     val imagenUrl: String,
 
-    /**
-     * Obtener datos de Internet.
-     * juegoUrl: Dirección web de la actividad interactiva.
-     * Al ser un String opcional (String?), evitamos que la app falle si el
-     * dato llega vacío desde el servidor.
-     */
+    @SerialName(value = "juegoUrl")
     val juegoUrl: String? = "",
 
     /**
