@@ -46,11 +46,4 @@ class TutorPreferencesRepository(private val dataStore: DataStore<Preferences>) 
             preferences[IS_RESTRICTED_MODE] = isEnabled
         }
     }
-
-    // GUARDA EL TIEMPO MÁXIMO DE JUEGO
-    suspend fun saveMaxPlayingTime(minutes: Int) {
-        dataStore.edit { preferences ->
-            preferences[MAX_PLAYING_TIME] = minutes
-        }
-    }
 }
