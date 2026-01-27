@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 fun GestorProgresoApp(modifier: Modifier = Modifier) {
     val context = LocalContext.current
 
-    // --- REFERENCIA AL FICHERO (Alineado con los enlaces de la profesora) ---
+    // --- REFERENCIA AL FICHERO  ---
     // context.filesDir: Accede al almacenamiento interno privado de la app.
     // File: Clase de java.io para gestionar la ruta del archivo físico.
     val archivoProgreso = File(context.filesDir, "progreso_abn.txt")
@@ -80,7 +80,7 @@ fun GestorProgresoApp(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(30.dp))
 
-        // --- TARJETA VISUAL DEL NIVEL (Corregida con mejor espaciado) ---
+        // --- TARJETA VISUAL DEL NIVEL  ---
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             modifier = Modifier.size(180.dp),
@@ -116,7 +116,7 @@ fun GestorProgresoApp(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // --- BOTÓN GUARDAR (Uso de FileOutputStream según Enlace 2) ---
+        // --- BOTÓN GUARDAR (Uso de FileOutputStream) ---
         Button(
             onClick = {
                 try {
