@@ -35,6 +35,7 @@ import com.google.firebase.auth.userProfileChangeRequest
 import kotlinx.coroutines.launch
 
 // --- PALETA DE COLORES ABN ---
+// Colores seleccionados para mantener la coherencia visual con el método ABN.
 val FondoVerde = Color(0xFF6A9B74)
 val BotonNaranja = Color(0xFFF29900)
 val FondoTarjeta = Color(0xFFEBE3D5)
@@ -45,17 +46,23 @@ fun RegisterScreen(
     onLoginSuccess: (String) -> Unit,
     onMicrosoftClick: () -> Unit
 ) {
+    // --- GESTIÓN DE CONTEXTO Y SERVICIOS ---
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
+
+    // CredentialManager gestiona las identidades (Google/Passkeys) en Android moderno.
     val credentialManager = CredentialManager.create(context)
     val auth = FirebaseAuth.getInstance()
 
-    // --- ESTADOS DE CONTROL ---
+    // --- ESTADOS DE CONTROL DE INTERFAZ ---
+    // Alternamos entre Login y Registro para no saturar al tutor con varias pantallas.
     var isLoginMode by remember { mutableStateOf(true) }
-    var isLoading by remember { mutableStateOf(false) } // <--- Feedback visual para el tutor
 
-    // Estados de los campos
+    // Feedback visual (Loading): Evita que el usuario pulse botones mientras se procesa la red.
+    var isLoading by remember { mutableStateOf(false) }
+
+    // Estados de los campos (State Hoisting: el estado vive en el Composable principal).
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -63,7 +70,8 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
     var confirmPasswordVisible by remember { mutableStateOf(false) }
 
-    // Lógica de validación dinámica
+    // --- LÓGICA DE VALIDACIÓN DINÁMICA ---
+    // Verificamos patrones de email y longitud antes de molestar a los servidores de Firebase.
     val isEmailValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
     val passwordsMatch = if (isLoginMode) true else (password == confirmPassword && password.isNotEmpty())
     val isFormValid = if (isLoginMode) {
@@ -80,6 +88,7 @@ fun RegisterScreen(
             modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Cabecera dinámica según el modo de la pantalla.
             Text(
                 text = if (isLoginMode) "¡Hola de nuevo!" else "Registro nuevo usuario",
                 fontSize = 32.sp, color = Color.White, fontWeight = FontWeight.Bold
@@ -100,6 +109,7 @@ fun RegisterScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // Mostramos el campo de nombre solo si el tutor es nuevo.
                     if (!isLoginMode) {
                         CustomTextField(name, { name = it }, "Nombre completo", Icons.Default.Person)
                     }
@@ -107,6 +117,7 @@ fun RegisterScreen(
                     CustomTextField(email, { email = it }, "Correo electrónico", Icons.Default.Email, isError = email.isNotEmpty() && !isEmailValid)
                     PasswordField(password, { password = it }, "Contraseña", passwordVisible, { passwordVisible = !passwordVisible })
 
+                    // Solo validamos la confirmación si estamos en modo Registro.
                     if (!isLoginMode) {
                         PasswordField(confirmPassword, { confirmPassword = it }, "Confirmar contraseña", confirmPasswordVisible, { confirmPasswordVisible = !confirmPasswordVisible }, isError = confirmPassword.isNotEmpty() && !passwordsMatch)
                         if (confirmPassword.isNotEmpty() && !passwordsMatch) {
@@ -116,12 +127,14 @@ fun RegisterScreen(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // BOTÓN PRINCIPAL CON FEEDBACK VISUAL
+                    // --- BOTÓN DE ACCIÓN PRINCIPAL ---
+                    // Gestionamos la entrada a los juegos de cálculo ABN.
                     Button(
                         onClick = {
                             if (isFormValid && !isLoading) {
                                 isLoading = true
                                 if (isLoginMode) {
+                                    // LOGIN: Autentica al tutor existente y guarda la sesión localmente.
                                     auth.signInWithEmailAndPassword(email, password)
                                         .addOnSuccessListener {
                                             isLoading = false
@@ -132,6 +145,7 @@ fun RegisterScreen(
                                             Toast.makeText(context, "Error: ${it.localizedMessage}", Toast.LENGTH_LONG).show()
                                         }
                                 } else {
+                                    // REGISTRO: Crea el usuario. Si tiene éxito, actualiza el perfil con su nombre.
                                     auth.createUserWithEmailAndPassword(email, password)
                                         .addOnSuccessListener { result ->
                                             val profileUpdates = userProfileChangeRequest { displayName = name }
@@ -142,6 +156,7 @@ fun RegisterScreen(
                                         }
                                         .addOnFailureListener {
                                             isLoading = false
+                                            // Gestión específica de error: El correo ya existe en Firebase.
                                             val errorMsg = if (it.message?.contains("already in use") == true)
                                                 "Este correo ya existe. Prueba a Iniciar Sesión." else it.localizedMessage
                                             Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
@@ -155,12 +170,14 @@ fun RegisterScreen(
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         if (isLoading) {
+                            // Círculo de progreso para indicar que la app está trabajando.
                             CircularProgressIndicator(modifier = Modifier.size(24.dp), color = Color.White, strokeWidth = 2.dp)
                         } else {
                             Text(if (isLoginMode) "Entrar" else "Regístrate", color = Color.White, fontSize = 18.sp)
                         }
                     }
 
+                    // Enlace para cambiar entre Login y Registro sin cambiar de pantalla.
                     Text(
                         text = if (isLoginMode) "¿No tienes cuenta? Crea una aquí" else "¿Ya tienes cuenta? Inicia sesión",
                         modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 16.dp).clickable { isLoginMode = !isLoginMode },
@@ -173,9 +190,11 @@ fun RegisterScreen(
                     HorizontalDivider(color = Color.Gray.copy(alpha = 0.3f))
                     Text("o continúa con", modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 8.dp), color = Color.Gray, fontSize = 12.sp)
 
+                    // --- MÉTODOS DE AUTENTICACIÓN SOCIAL (OAuth) ---
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                         SocialButton(R.drawable.ic_google, onClick = {
                             isLoading = true
+                            // Petición de identidad a través de Google Identity Services.
                             val googleIdOption = GetGoogleIdOption.Builder()
                                 .setFilterByAuthorizedAccounts(false)
                                 .setServerClientId("970438592020-o4qktgubv5fna7937rc5cl67cdjnucbp.apps.googleusercontent.com")
@@ -186,6 +205,7 @@ fun RegisterScreen(
                                     val result = credentialManager.getCredential(context, request)
                                     val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
                                     val firebaseCredential = com.google.firebase.auth.GoogleAuthProvider.getCredential(googleIdTokenCredential.idToken, null)
+                                    // Vinculamos el token de Google con Firebase para iniciar sesión oficialmente.
                                     auth.signInWithCredential(firebaseCredential).addOnSuccessListener {
                                         isLoading = false
                                         onLoginSuccess(it.user?.displayName ?: "Tutor ABN")
@@ -197,6 +217,7 @@ fun RegisterScreen(
                             }
                         })
                         Spacer(modifier = Modifier.width(20.dp))
+                        // El botón de Microsoft usa la lógica definida en el Activity mediante Azure.
                         SocialButton(R.drawable.ic_microsoft, onClick = onMicrosoftClick)
                     }
                 }
@@ -205,7 +226,8 @@ fun RegisterScreen(
     }
 }
 
-// --- SUBCOMPONENTES ---
+// --- SUBCOMPONENTES REUTILIZABLES ---
+
 @Composable
 fun CustomTextField(value: String, onValueChange: (String) -> Unit, label: String, icon: ImageVector, isError: Boolean = false) {
     OutlinedTextField(
