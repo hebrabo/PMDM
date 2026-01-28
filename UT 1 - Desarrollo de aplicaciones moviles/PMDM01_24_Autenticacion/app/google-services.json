@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "970438592020",
+    "project_id": "calculoabninfantil",
+    "storage_bucket": "calculoabninfantil.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:970438592020:android:c84b0b29aa21becc064901",
+        "android_client_info": {
+          "package_name": "com.example.pmdm01_24_autenticacion"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "970438592020-aghjjp6jn3lmebgbuesjg4phb6f5q9i7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.pmdm01_24_autenticacion",
+            "certificate_hash": "4b83a4b7165f42108ae24aba16837ed03f8b5797"
+          }
+        },
+        {
+          "client_id": "970438592020-o4qktgubv5fna7937rc5cl67cdjnucbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBs7DRNktzp6lVkFTFeN8melBVp4780cVY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "970438592020-o4qktgubv5fna7937rc5cl67cdjnucbp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

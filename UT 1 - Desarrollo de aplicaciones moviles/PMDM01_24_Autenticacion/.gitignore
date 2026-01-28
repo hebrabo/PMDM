@@ -1,0 +1,34 @@
+# --- Archivos del IDE (Android Studio / IntelliJ) ---
+*.iml
+.idea/
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+
+# --- Carpeta de Gradle y compilación ---
+.gradle/
+build/
+/build
+/*/build
+
+# --- Configuración local (¡MUY IMPORTANTE!) ---
+# Contiene la ruta del SDK de tu ordenador y no debe compartirse
+local.properties
+
+# --- Firebase (Configuración del proyecto) ---
+# Si vas a compartir el código en un sitio público como GitHub, 
+# se recomienda ignorar este archivo para que otros no usen tu cuota.
+# google-services.json
+
+# --- Archivos generados y temporales ---
+captures/
+/captures
+.externalNativeBuild
+.cxx
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+Thumbs.db
